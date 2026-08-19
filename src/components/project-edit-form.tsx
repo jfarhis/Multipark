@@ -18,11 +18,11 @@ export function ProjectEditForm({ project }: { project: Project }) {
   return (
     <details className="panel mt-5 overflow-hidden">
       <summary className="flex cursor-pointer list-none items-center gap-3 p-4 text-[11px] font-semibold">
-        <span className="grid size-8 place-items-center rounded-lg bg-[#8b72ff]/10 text-[#aa99ff]"><PencilLine size={14} /></span>
+        <span className="grid size-8 place-items-center rounded-lg bg-[#ff7a2f]/10 text-[#ffab63]"><PencilLine size={14} /></span>
         Editar este proyecto
-        <span className="ml-auto text-[9px] font-normal text-[#69766e]">Controles de administrador</span>
+        <span className="ml-auto text-[9px] font-normal text-[#96725f]">Controles de administrador</span>
       </summary>
-      <div className="border-t border-[#202b25] p-5">
+      <div className="border-t border-[#35201a] p-5">
         <form action={updateAction} className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <label className="field-label">Nombre del proyecto<input required name="name" defaultValue={project.name} className="input-shell mt-2 h-10 px-3" /></label>
           <label className="field-label">Ubicación<input required name="location" defaultValue={project.location} className="input-shell mt-2 h-10 px-3" /></label>
@@ -36,16 +36,16 @@ export function ProjectEditForm({ project }: { project: Project }) {
           <label className="field-label">Presupuesto de terreno<input required type="number" min="0" name="landAmount" defaultValue={budgetValue("terreno", "land")} className="input-shell mt-2 h-10 px-3" /></label>
           <label className="field-label">Costos indirectos<input required type="number" min="0" name="softCostsAmount" defaultValue={budgetValue("costos indirectos", "soft costs")} className="input-shell mt-2 h-10 px-3" /></label>
           <label className="field-label">Reserva<input required type="number" min="0" name="reserveAmount" defaultValue={budgetValue("reserva", "reserve")} className="input-shell mt-2 h-10 px-3" /></label>
-          <div className="border-t border-[#202b25] pt-5 sm:col-span-2 xl:col-span-4"><p className="text-[11px] font-semibold">Línea de tiempo editable</p><p className="mt-1 text-[9px] text-[#718078]">Agrega hasta seis hitos. Deja el nombre vacío para ocultar una fila.</p></div>
+          <div className="border-t border-[#35201a] pt-5 sm:col-span-2 xl:col-span-4"><p className="text-[11px] font-semibold">Línea de tiempo editable</p><p className="mt-1 text-[9px] text-[#96725f]">Agrega hasta seis hitos. Deja el nombre vacío para ocultar una fila.</p></div>
           <div className="grid gap-3 sm:col-span-2 xl:col-span-4 xl:grid-cols-2">
-            {milestoneRows.map((milestone, index) => <div key={index} className="grid gap-3 rounded-xl border border-[#202b25] bg-[#0b110e] p-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"><label className="field-label">Hito {index + 1}<input name={`milestoneLabel${index}`} defaultValue={milestone.label} className="input-shell mt-2 h-10 px-3" placeholder="Ej. Adquisición del terreno" /></label><label className="field-label">Detalle o fecha<input name={`milestoneDetail${index}`} defaultValue={milestone.detail} className="input-shell mt-2 h-10 px-3" placeholder="Ej. Terminado o marzo 2027" /></label><label className="flex h-10 items-center gap-2 text-[9px] text-[#8a968e]"><input name={`milestoneComplete${index}`} type="checkbox" defaultChecked={milestone.complete} className="size-4 accent-[#22c9a5]" />Terminado</label></div>)}
+            {milestoneRows.map((milestone, index) => <div key={index} className="grid gap-3 rounded-xl border border-[#35201a] bg-[#1a0d0a] p-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"><label className="field-label">Hito {index + 1}<input name={`milestoneLabel${index}`} defaultValue={milestone.label} className="input-shell mt-2 h-10 px-3" placeholder="Ej. Adquisición del terreno" /></label><label className="field-label">Detalle o fecha<input name={`milestoneDetail${index}`} defaultValue={milestone.detail} className="input-shell mt-2 h-10 px-3" placeholder="Ej. Terminado o marzo 2027" /></label><label className="flex h-10 items-center gap-2 text-[9px] text-[#b18f7e]"><input name={`milestoneComplete${index}`} type="checkbox" defaultChecked={milestone.complete} className="size-4 accent-[#ff6b3d]" />Terminado</label></div>)}
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3 sm:col-span-2 xl:col-span-4"><FormMessage state={updateState} /><SubmitButton pendingLabel="Guardando proyecto…"><Save size={13} />Guardar proyecto</SubmitButton></div>
         </form>
 
         <div className="mt-6 border-t border-[#342126] pt-5">
           <p className="text-[10px] font-semibold text-[#ff8296]">Eliminar proyecto</p>
-          <p className="mt-1 text-[9px] leading-4 text-[#7b6c70]">También elimina sus participaciones, distribuciones y documentos. Escribe exactamente el nombre del proyecto para confirmar.</p>
+          <p className="mt-1 text-[9px] leading-4 text-[#8a6a60]">También elimina sus participaciones, distribuciones y documentos. Escribe exactamente el nombre del proyecto para confirmar.</p>
           <form action={deleteAction} className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
             <label className="field-label max-w-md flex-1">Confirmación<input name="confirmation" className="input-shell mt-2 h-10 px-3" placeholder={project.name} autoComplete="off" /></label>
             <SubmitButton pendingLabel="Eliminando…" variant="danger"><Trash2 size={13} />Eliminar proyecto</SubmitButton>

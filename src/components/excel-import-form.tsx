@@ -11,9 +11,9 @@ export function ExcelImportForm() {
   const [state, action] = useActionState(importWorkbookAction, initialFormState);
   return (
     <details className="panel mt-4 overflow-hidden">
-      <summary className="flex cursor-pointer list-none items-center gap-3 p-4 text-[11px] font-semibold"><span className="grid size-8 place-items-center rounded-lg bg-[#22c9a5]/10 text-[#4fdbbd]"><FileSpreadsheet size={14} /></span>Importar o actualizar desde Excel<span className="ml-auto text-[9px] font-normal text-[#69766e]">Combina por ID de registro</span></summary>
-      <form action={action} className="border-t border-[#202b25] p-5">
-        <p className="max-w-3xl text-[9px] leading-5 text-[#748078]">El archivo debe contener las hojas Investors, Projects, Investor_Project_Stakes, Distributions y Documents. Los ID existentes se actualizan; los demás registros no cambian.</p>
+      <summary className="flex cursor-pointer list-none items-center gap-3 p-4 text-[11px] font-semibold"><span className="grid size-8 place-items-center rounded-lg bg-[#ff6b3d]/10 text-[#ffc46b]"><FileSpreadsheet size={14} /></span>Importar o actualizar desde Excel<span className="ml-auto text-[9px] font-normal text-[#96725f]">Combina por ID de registro</span></summary>
+      <form action={action} className="border-t border-[#35201a] p-5">
+        <p className="max-w-3xl text-[9px] leading-5 text-[#a3806f]">El archivo debe contener las hojas Investors, Projects, Investor_Project_Stakes, Distributions y Documents. Los ID existentes se actualizan; los demás registros no cambian.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"><label className="field-label max-w-xl flex-1">Archivo de Excel<input required name="workbook" type="file" accept=".xlsx,.xls" className="input-shell mt-2 h-10 p-2 text-[10px]" /></label><SubmitButton pendingLabel="Importando…">Importar archivo</SubmitButton></div>
         <div className="mt-3"><FormMessage state={state} /></div>
       </form>
