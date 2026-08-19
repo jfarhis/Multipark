@@ -1,7 +1,7 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { Building2, FileText, LayoutDashboard, Search, Settings, Users } from "lucide-react";
+import { Building2, FileText, HandCoins, LayoutDashboard, Search, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -12,6 +12,7 @@ const adminNav = [
   ["Overview", "/admin", LayoutDashboard],
   ["Projects", "/projects", Building2],
   ["Investors", "/admin/investors", Users],
+  ["Distributions", "/admin/distributions", HandCoins],
   ["Documents", "/admin/documents", FileText],
   ["Settings", "/settings", Settings],
 ] as const;
@@ -31,6 +32,7 @@ function isActive(pathname: string, href: string) {
 function breadcrumbLabel(pathname: string) {
   if (pathname.includes("investors")) return "Investors";
   if (pathname.includes("documents")) return "Documents";
+  if (pathname.includes("distributions")) return "Distributions";
   if (pathname.includes("settings")) return "Settings";
   if (pathname.includes("projects")) return "Projects";
   return "Portfolio overview";

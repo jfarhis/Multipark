@@ -27,6 +27,7 @@ export class DatabaseDashboardRepository implements DashboardRepository {
         id: row.id,
         name: row.name,
         email: row.email,
+        phone: row.phone,
         bankDetails: row.bankDetails,
       })),
       projects: projectRows.map((row) => ({
@@ -54,20 +55,31 @@ export class DatabaseDashboardRepository implements DashboardRepository {
         amount: row.amount,
         date: row.date,
         receiptFileUrl: row.receiptPathname
-          ? `/api/documents/receipt/${row.id}`
+          ? `/api/receipts/${row.id}`
           : "#",
       })),
-      documents: documentRows.map((row) => ({
+      documents: [
+        ...documentRows.map((row) => ({
         id: row.id,
         projectId: row.projectId,
         investorId: row.investorId,
         title: row.title,
         fileUrl: row.pathname
           ? `/api/documents/${row.id}`
-          : (row.externalUrl ?? "#"),
+          : (row.externalUrl?.startsWith("https://") || row.externalUrl?.startsWith("http://") ? row.externalUrl : "#"),
         uploadedDate: row.uploadedDate,
         type: row.type,
-      })),
+        })),
+        ...distributionRows.filter((row) => Boolean(row.receiptPathname)).map((row) => ({
+          id: `distribution-receipt-${row.id}`,
+          projectId: row.projectId,
+          investorId: row.investorId,
+          title: `Distribution receipt — ${row.date}`,
+          fileUrl: `/api/receipts/${row.id}`,
+          uploadedDate: row.date,
+          type: "receipt" as const,
+        })),
+      ],
     };
   }
 }

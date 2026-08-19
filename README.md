@@ -19,10 +19,15 @@ A private investor portal for Gasfar Capital. Administrators manage projects, in
 ## Everyday administrator workflow
 
 - **Invite an investor:** open **Investors**, select **Invite investor**, and enter their name and email. They receive their own secure setup email.
+- **Edit a project:** open **Projects**, choose a project, and expand **Edit this project**. You can update performance, budget, dates, and budget categories.
 - **Add a project:** open the bottom of **Overview** and expand **Add a project**.
-- **Assign ownership:** open an investor and save their project percentages.
-- **Upload a file:** open **Documents**, choose the project and optional investor, then upload. Files assigned to one investor remain visible only to that investor and administrators.
+- **Edit an investor or assign ownership:** open **Investors**, choose a person, then use **Edit investor details** and **Project ownership**.
+- **Manage distributions:** open **Distributions** to record payments, correct an existing payment, replace its receipt, or remove it.
+- **Manage files:** open **Documents** to upload, rename, reassign, replace, or remove a file. Files assigned to one investor remain visible only to that investor and administrators.
 - **Export data:** use **Export report** or **Export CSV** to download a spreadsheet-ready file.
+- **Import Excel:** open the bottom of **Overview** and expand **Import or update from Excel**. Matching record IDs are updated without deleting records that are not in the workbook.
+
+Deletion requires typing the exact project name, investor email, or the word `DELETE`. This protects the portfolio against accidental clicks.
 
 ## Important data note
 

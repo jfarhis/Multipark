@@ -1,6 +1,7 @@
 import { Building2, Landmark, Percent, Users, WalletCards } from "lucide-react";
 import { DistributionLineChart, PortfolioActivityDonut } from "@/components/charts";
 import { ExportButton } from "@/components/export-button";
+import { ExcelImportForm } from "@/components/excel-import-form";
 import { KpiCard } from "@/components/kpi-card";
 import { PageHeading } from "@/components/page-heading";
 import { ProgressBar } from "@/components/progress-bar";
@@ -99,6 +100,7 @@ export default async function AdminOverviewPage() {
       </section>
 
       <ProjectCreateForm />
+      <ExcelImportForm />
     </>
   );
 }
