@@ -130,11 +130,11 @@ export async function updateInvestorStakesAction(
     if (!key.startsWith("stake:")) continue;
     const projectId = key.slice(6);
     const stakePct = Number(rawValue);
-    const capitalCommitted = projectBudget.get(projectId);
-    if (!Number.isFinite(stakePct) || stakePct < 0 || stakePct > 100 || capitalCommitted === undefined) {
+    const budgetTotal = projectBudget.get(projectId);
+    if (!Number.isFinite(stakePct) || stakePct < 0 || stakePct > 100 || budgetTotal === undefined) {
       return { status: "error", message: "Cada porcentaje de participación debe estar entre 0 y 100." };
     }
-    changes.push({ projectId, stakePct, capitalCommitted });
+    changes.push({ projectId, stakePct, capitalCommitted: Math.round(budgetTotal * (stakePct / 100)) });
   }
   await Promise.all(changes.map((change) => change.stakePct === 0
     ? db.delete(investorProjectStakes).where(and(eq(investorProjectStakes.investorId, investorId), eq(investorProjectStakes.projectId, change.projectId)))

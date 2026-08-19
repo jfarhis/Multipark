@@ -7,6 +7,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: { default: "Gasfar Capital", template: "%s · Gasfar Capital" },
   description: "Portal privado de inversiones inmobiliarias.",
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

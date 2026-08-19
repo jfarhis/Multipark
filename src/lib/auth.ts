@@ -1,4 +1,5 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { eq, or, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { investors } from "@/db/schema";
@@ -49,4 +50,10 @@ export async function getSession(): Promise<Session | null> {
     name: investor.name,
     email: investor.email,
   };
+}
+
+export async function requireAdminSession(): Promise<Session> {
+  const session = await getSession();
+  if (session?.role !== "admin") redirect(session ? "/dashboard" : "/login");
+  return session;
 }

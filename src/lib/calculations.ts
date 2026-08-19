@@ -17,8 +17,10 @@ export const compactMoney = new Intl.NumberFormat("es-MX", {
   maximumFractionDigits: 1,
 });
 
+// capitalCommitted stores the investor's actual capital (already scaled by
+// their stake) — both the admin stake editor and the Excel import save it that way.
 export function capitalForStake(stake: InvestorProjectStake) {
-  return stake.capitalCommitted * (stake.stakePct / 100);
+  return stake.capitalCommitted;
 }
 
 export function distributionsForStake(

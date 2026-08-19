@@ -10,18 +10,20 @@ import { ProjectCard } from "@/components/project-card";
 import { ProjectCreateForm } from "@/components/project-create-form";
 import { StatusBadge } from "@/components/status-badge";
 import { compactMoney, money, portfolioMetrics } from "@/lib/calculations";
-import { dashboardRepository } from "@/lib/data/repository";
+import { requireAdminSession } from "@/lib/auth";
+import { getDashboardData } from "@/lib/data/repository";
 
 const dateFormatter = new Intl.DateTimeFormat("es-MX", { month: "short", day: "numeric", year: "numeric" });
 
 export default async function AdminOverviewPage() {
-  const data = await dashboardRepository.getDashboardData();
+  const session = await requireAdminSession();
+  const data = await getDashboardData(session);
   const metrics = portfolioMetrics(data);
   const projectById = new Map(data.projects.map((project) => [project.id, project]));
   const investorById = new Map(data.investors.map((investor) => [investor.id, investor]));
   const recentDistributions = data.distributions.toSorted((a, b) => b.date.localeCompare(a.date)).slice(0, 7);
   const chartDistributions = data.distributions.toSorted((a, b) => a.date.localeCompare(b.date)).slice(-7);
-  const chartValues = chartDistributions.map((item) => Math.round(item.amount / 1000));
+  const chartValues = chartDistributions.map((item) => item.amount);
   const chartLabels = chartDistributions.map((item) => new Intl.DateTimeFormat("es-MX", { month: "short", day: "numeric" }).format(new Date(`${item.date}T12:00:00`)));
   const exportRows = data.distributions.map((distribution) => ({
     Fecha: distribution.date,
@@ -34,7 +36,7 @@ export default async function AdminOverviewPage() {
     <>
       <PageHeading
         eyebrow="Centro de control"
-        title="Bienvenido, Joseph"
+        title={`Bienvenido, ${session.name.split(" ")[0]}`}
         description="Capital, proyectos e inversionistas del portafolio Gasfar en un solo lugar."
         action={<ExportButton filename="gasfar-distribuciones.csv" rows={exportRows} label="Exportar reporte" />}
       />

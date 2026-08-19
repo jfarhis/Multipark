@@ -3,15 +3,15 @@ import { redirect } from "next/navigation";
 import { PageHeading } from "@/components/page-heading";
 import { ProjectCard } from "@/components/project-card";
 import { getSession } from "@/lib/auth";
-import { dashboardRepository } from "@/lib/data/repository";
+import { getDashboardData } from "@/lib/data/repository";
 
 export default async function ProjectsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const [session, data, query] = await Promise.all([
+  const [session, query] = await Promise.all([
     getSession(),
-    dashboardRepository.getDashboardData(),
     searchParams.then((params) => params.q?.trim().toLowerCase() ?? ""),
   ]);
   if (!session) redirect("/login");
+  const data = await getDashboardData(session);
 
   const allowedProjectIds = session.role === "investor"
     ? new Set(data.stakes.filter((stake) => stake.investorId === session.investorId).map((stake) => stake.projectId))

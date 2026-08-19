@@ -2,7 +2,6 @@
 
 import {
   ArcElement,
-  BarElement,
   CategoryScale,
   Chart as ChartJS,
   Filler,
@@ -12,10 +11,10 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
+import { Doughnut, Line } from "react-chartjs-2";
 import { compactMoney } from "@/lib/calculations";
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip);
+ChartJS.register(ArcElement, CategoryScale, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip);
 
 const palette = ["#41b8e6", "#f5b82e", "#22c9a5", "#ec3c8c"];
 const grid = { color: "rgba(76, 94, 84, .2)", drawTicks: false };
@@ -47,16 +46,7 @@ export function DistributionLineChart({ values = [], labels = [] }: { values?: n
           },
         }],
       }}
-      options={{ responsive: true, maintainAspectRatio: false, animation: { duration: 700 }, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => `$${context.parsed.y} mil distribuidos` } } }, scales: { x: { border: { display: false }, grid: { display: false }, ticks }, y: { border: { display: false }, grid, ticks: { ...ticks, callback: (value) => `$${value} mil` } } } }}
-    />
-  );
-}
-
-export function OccupancyBarChart({ values, labels = [] }: { values: number[]; labels?: string[] }) {
-  return (
-    <Bar
-      data={{ labels, datasets: [{ data: values, backgroundColor: values.map((_, index) => index === 2 ? "#22c9a5" : "rgba(139,114,255,.68)"), borderRadius: 5, borderSkipped: false, barThickness: 18 }] }}
-      options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => `${context.parsed.y}% ocupado` } } }, scales: { x: { border: { display: false }, grid: { display: false }, ticks }, y: { min: 0, max: 100, border: { display: false }, grid, ticks: { ...ticks, callback: (value) => `${value}%` } } } }}
+      options={{ responsive: true, maintainAspectRatio: false, animation: { duration: 700 }, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => `${compactMoney.format(context.parsed.y ?? 0)} distribuidos` } } }, scales: { x: { border: { display: false }, grid: { display: false }, ticks }, y: { border: { display: false }, grid, ticks: { ...ticks, callback: (value) => compactMoney.format(Number(value)) } } } }}
     />
   );
 }
