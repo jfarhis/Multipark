@@ -1,23 +1,47 @@
 # Gasfar Capital Investor Dashboard
 
-A premium dark-theme investor portal for managing real-estate projects, ownership stakes, distributions, and documents.
+A private investor portal for Gasfar Capital. Administrators manage projects, investors, ownership, distributions, and documents. Investors only see their own positions and permitted files.
 
-## Run locally
+## What is connected
+
+- **Clerk** handles secure sign-in and invitations.
+- **Neon Postgres** stores portfolio and account data.
+- **Vercel Blob** stores uploaded documents privately.
+- **Vercel** hosts the live application.
+
+## Owner's first login
+
+1. Open the live website and choose **Create account**.
+2. Use `Joseph@gasfar.com` exactly. This email is recognized as the administrator.
+3. Complete the email verification sent by Clerk.
+4. You will be taken to the administrator dashboard.
+
+## Everyday administrator workflow
+
+- **Invite an investor:** open **Investors**, select **Invite investor**, and enter their name and email. They receive their own secure setup email.
+- **Add a project:** open the bottom of **Overview** and expand **Add a project**.
+- **Assign ownership:** open an investor and save their project percentages.
+- **Upload a file:** open **Documents**, choose the project and optional investor, then upload. Files assigned to one investor remain visible only to that investor and administrators.
+- **Export data:** use **Export report** or **Export CSV** to download a spreadsheet-ready file.
+
+## Important data note
+
+The database currently contains sample portfolio records used to prove the complete system. Replace these with Gasfar's real figures before inviting investors. The workbook importer remains available in `src/lib/data/excel-repository.ts` when the source Excel file is ready.
+
+## Local development
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:3000` and choose the administrator or investor demo workspace.
+Copy `.env.example` to `.env.local` and fill in the connected service values. Never commit `.env.local`, passwords, tokens, or investor documents.
 
-## Data integrations
+## Database commands
 
-- `src/lib/data/repository.ts` defines the swappable dashboard data interface.
-- `src/lib/data/excel-repository.ts` reads the five workbook sheets described in the product brief.
-- `src/lib/data/github-documents.ts` synchronizes files from a GitHub repository's `/receipts` folder.
-- The current UI uses realistic mock data from `src/lib/mock-data.ts` until an `.xlsx` workbook is supplied.
+```bash
+pnpm db:push
+pnpm db:seed
+```
 
-## Environment variables
-
-For private GitHub receipt sync, configure `GITHUB_TOKEN` and the target repository in the deployment environment. Never commit tokens or investor data to the repository.
+`db:push` creates or updates the schema. `db:seed` loads the sample data and should not be run after production records replace it.

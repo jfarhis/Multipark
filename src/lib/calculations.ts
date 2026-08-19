@@ -78,14 +78,16 @@ export function portfolioMetrics(data: DashboardData) {
     (sum, distribution) => sum + distribution.amount,
     0,
   );
-  const averageIrr =
-    data.projects.reduce((sum, project) => sum + project.projectedIrr, 0) /
-    data.projects.length;
-  const blendedOccupancy =
-    data.projects.reduce(
+  const averageIrr = data.projects.length
+    ? data.projects.reduce((sum, project) => sum + project.projectedIrr, 0) / data.projects.length
+    : 0;
+  const totalBudget = data.projects.reduce((sum, project) => sum + project.budgetTotal, 0);
+  const blendedOccupancy = totalBudget
+    ? data.projects.reduce(
       (sum, project) => sum + project.occupancyPct * project.budgetTotal,
       0,
-    ) / data.projects.reduce((sum, project) => sum + project.budgetTotal, 0);
+    ) / totalBudget
+    : 0;
 
   return { totalInvested, totalDistributed, averageIrr, blendedOccupancy };
 }

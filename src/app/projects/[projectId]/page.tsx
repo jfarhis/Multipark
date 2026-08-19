@@ -8,5 +8,6 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[proj
   if (!session) redirect("/login");
   const project = data.projects.find((item) => item.id === projectId);
   if (!project) notFound();
+  if (session.role === "investor" && !data.stakes.some((stake) => stake.investorId === session.investorId && stake.projectId === projectId)) notFound();
   return <ProjectDetail data={data} project={project} session={session} />;
 }
