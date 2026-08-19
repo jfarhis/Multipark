@@ -33,7 +33,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
           })}
         </div>
       ) : (
-        <div className="panel grid min-h-64 place-items-center p-8 text-center"><div><FolderSearch className="mx-auto text-[#96725f]" size={26} /><p className="mt-4 text-[12px] font-semibold">No hay proyectos</p><p className="mt-1 text-[9px] text-[#96725f]">{session.role === "admin" ? "Crea tu primer proyecto desde la página de Resumen." : "Tu administrador todavía no te ha asignado una participación."}</p></div></div>
+        <div className="panel grid min-h-64 place-items-center p-8 text-center"><div><FolderSearch className="mx-auto text-[#6b7594]" size={26} /><p className="mt-4 text-[12px] font-semibold">No hay proyectos</p><p className="mt-1 text-[9px] text-[#6b7594]">{session.role === "admin" ? "Crea tu primer proyecto desde la página de Resumen." : "Tu administrador todavía no te ha asignado una participación."}</p></div></div>
       )}
     </>
   );

@@ -6,7 +6,7 @@ export function PageHeading({ eyebrow, title, description, action }: { eyebrow?:
       <div>
         {eyebrow ? <p className="eyebrow mb-1.5">{eyebrow}</p> : null}
         <h1 className="text-[20px] font-semibold tracking-[-0.025em]">{title}</h1>
-        <p className="mt-1 max-w-2xl text-[10px] leading-4 text-[#a3806f]">{description}</p>
+        <p className="mt-1 max-w-2xl text-[10px] leading-4 text-[#7c86a6]">{description}</p>
       </div>
       {action}
     </div>

@@ -12,9 +12,9 @@ export function ProjectCreateForm() {
   return (
     <details id="new-project" className="panel mt-4 overflow-hidden">
       <summary className="flex cursor-pointer list-none items-center gap-3 p-4 text-[11px] font-semibold">
-        <span className="grid size-8 place-items-center rounded-lg bg-[#ff7a2f]/10 text-[#ffa35c]"><Building2 size={14} /></span>
+        <span className="grid size-8 place-items-center rounded-lg bg-[#4d7cfe]/10 text-[#7ea2ff]"><Building2 size={14} /></span>
         Agregar un proyecto al portafolio
-        <span className="ml-auto text-[9px] font-normal text-[#96725f]">Abrir formulario</span>
+        <span className="ml-auto text-[9px] font-normal text-[#6b7594]">Abrir formulario</span>
       </summary>
       <form action={action} className="grid gap-3 border-t border-white/6 p-5 sm:grid-cols-2 xl:grid-cols-4">
         <label className="field-label">Nombre del proyecto<input required name="name" className="input-shell mt-2 h-10 px-3" /></label>

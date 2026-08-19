@@ -1,5 +1,6 @@
 import type {
   DashboardData,
+  Distribution,
   InvestorProjectStake,
   Project,
 } from "./types";
@@ -92,6 +93,33 @@ export function portfolioMetrics(data: DashboardData) {
     : 0;
 
   return { totalInvested, totalDistributed, averageIrr, blendedOccupancy };
+}
+
+const monthFormatter = new Intl.DateTimeFormat("es-MX", { month: "short", year: "2-digit" });
+
+// Aggregates distributions into calendar months, with a running cumulative
+// total, for the dual-series line charts. Months come back sorted ascending.
+export function monthlyDistributionSeries(distributions: Distribution[]) {
+  const byMonth = new Map<string, number>();
+  for (const distribution of distributions) {
+    const month = distribution.date.slice(0, 7);
+    byMonth.set(month, (byMonth.get(month) ?? 0) + distribution.amount);
+  }
+  let cumulative = 0;
+  return [...byMonth.keys()].sort().map((month) => {
+    const amount = byMonth.get(month)!;
+    cumulative += amount;
+    return { month, label: monthFormatter.format(new Date(`${month}-15T12:00:00`)), amount, cumulative };
+  });
+}
+
+// Percent change of the latest complete data point vs the one before it.
+// Returns undefined when there is not enough history to compare honestly.
+export function distributionTrend(series: { amount: number }[]) {
+  if (series.length < 2) return undefined;
+  const previous = series[series.length - 2].amount;
+  if (!previous) return undefined;
+  return ((series[series.length - 1].amount - previous) / previous) * 100;
 }
 
 export function completionLabel(project: Project) {
