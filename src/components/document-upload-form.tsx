@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
-import { Camera, FileText, FileUp, ReceiptText } from "lucide-react";
+import { Building2, Camera, FileText, FileUp, ReceiptText } from "lucide-react";
 import { uploadDocumentAction } from "@/app/admin/actions";
 import { initialFormState } from "@/lib/form-state";
 import type { DashboardData, DocumentType } from "@/lib/types";
@@ -31,7 +32,7 @@ export function DocumentUploadForm({ data }: { data: DashboardData }) {
         <label className="field-label">Fecha del avance o documento<input required name="uploadedDate" type="date" defaultValue={today} className="input-shell mt-2 h-11 px-3" /></label>
         <label className="field-label md:col-span-2">Seleccionar archivo<input required name="file" type="file" accept={fileAccept} className="input-shell mt-2 min-h-11 p-2 text-[13px]" /><span className="mt-2 block font-normal text-[#6b7594]">Máximo 10 MB. {type === "photo" ? "JPG, PNG o WebP." : "PDF, imagen o Excel."}</span></label>
         <div className="flex flex-col-reverse gap-3 md:col-span-2 xl:col-span-3 sm:flex-row sm:items-center sm:justify-between"><FormMessage state={state} /><SubmitButton pendingLabel="Publicando…">Publicar de forma segura</SubmitButton></div>
-      </form> : <div className="mt-5 rounded-xl border border-[#2a3554] bg-[#121830] p-4 text-[13px] leading-5 text-[#7c86a6]">Primero crea un proyecto. Después podrás publicar fotos y documentos para sus inversionistas.</div>}
+      </form> : <div className="mt-5 rounded-xl border border-[#2a3554] bg-[#121830] p-4"><p className="text-[14px] font-semibold">Primero crea un proyecto</p><p className="mt-1 text-[13px] leading-5 text-[#7c86a6]">Después podrás publicar fotos, avances y documentos dentro de ese proyecto individual.</p><Link href="/admin#new-project" className="primary-button mt-4 px-4"><Building2 size={14} />Crear primer proyecto</Link></div>}
     </section>
   );
 }

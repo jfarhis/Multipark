@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarDays, Camera, ChevronRight, Download, ExternalLink, MapPin } from "lucide-react";
+import { CalendarDays, Camera, ChevronRight, Download, ExternalLink, HandCoins, MapPin } from "lucide-react";
 import type { DashboardData, Project, Session } from "@/lib/types";
 import { capitalForStake, compactMoney, completionLabel, distributionsForStake, monthlyDistributionSeries, projectRaised } from "@/lib/calculations";
 import { BudgetDonutChart, DistributionLineChart } from "./charts";
@@ -36,7 +36,7 @@ export function ProjectDetail({ data, project, session }: { data: DashboardData;
       {session.role === "admin" ? <ProjectEditForm project={project} /> : null}
       <section className="panel mt-5 flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#4d7cfe]/10 text-[#8fb0ff]"><MapPin size={18} /></span><div><p className="text-[14px] font-semibold">Ubicación de las naves industriales</p><p className="mt-1 text-[13px] leading-5 text-[#8a93b2]">{project.location}</p></div></div>
-        <div className="flex flex-wrap gap-2"><a href={mapsHref} target="_blank" rel="noreferrer" className="secondary-button px-3">Abrir en Google Maps<ExternalLink size={13} /></a>{session.role === "admin" ? <Link href="/admin/documents#upload-update" className="primary-button px-3"><Camera size={14} />Agregar fotos de avance</Link> : null}</div>
+        <div className="flex flex-wrap gap-2"><a href={mapsHref} target="_blank" rel="noreferrer" className="secondary-button px-3">Abrir en Google Maps<ExternalLink size={13} /></a>{session.role === "admin" ? <><Link href={`/admin/distributions#project-${project.id}`} className="secondary-button px-3"><HandCoins size={14} />Administrar pagos</Link><Link href="/admin/documents#upload-update" className="primary-button px-3"><Camera size={14} />Agregar fotos de avance</Link></> : null}</div>
       </section>
       <section className="panel mt-6 grid divide-y divide-[#232b45] sm:grid-cols-2 sm:divide-x sm:divide-y-0 xl:grid-cols-5">{stats.map(([label, value]) => <div key={label} className="p-4"><p className="text-[12px] text-[#7c86a6]">{label}</p><p className="tabular mt-2 text-[16px] font-semibold">{value}</p></div>)}</section>
       <section className="mt-4 grid gap-4 xl:grid-cols-[1.45fr_1fr]">

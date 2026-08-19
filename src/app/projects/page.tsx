@@ -1,4 +1,5 @@
-import { FolderSearch } from "lucide-react";
+import Link from "next/link";
+import { FolderSearch, Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 import { PageHeading } from "@/components/page-heading";
 import { ProjectCard } from "@/components/project-card";
@@ -33,7 +34,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
           })}
         </div>
       ) : (
-        <div className="panel grid min-h-64 place-items-center p-8 text-center"><div><FolderSearch className="mx-auto text-[#6b7594]" size={26} /><p className="mt-4 text-[15px] font-semibold">No hay proyectos</p><p className="mt-1 text-[12px] text-[#6b7594]">{session.role === "admin" ? "Crea tu primer proyecto desde la página de Resumen." : "Tu administrador todavía no te ha asignado una participación."}</p></div></div>
+        <div className="panel grid min-h-64 place-items-center p-8 text-center"><div><FolderSearch className="mx-auto text-[#6b7594]" size={26} /><p className="mt-4 text-[15px] font-semibold">No hay proyectos</p><p className="mt-1 text-[12px] text-[#6b7594]">{session.role === "admin" ? "Crea tu primer proyecto para empezar a agregar inversionistas, pagos y avances." : "Tu administrador todavía no te ha asignado una participación."}</p>{session.role === "admin" ? <Link href="/admin#new-project" className="primary-button mt-5 px-4"><Plus size={14} />Crear primer proyecto</Link> : null}</div></div>
       )}
     </>
   );

@@ -384,6 +384,7 @@ export async function createDistributionAction(
     await getDb().insert(distributions).values({ id: `dist-${crypto.randomUUID()}`, ...parsed.data, receiptPathname });
   } catch (error) {
     if (receiptPathname) await del(receiptPathname).catch(() => undefined);
+    console.error("[admin:createDistribution] Save failed", { projectId: parsed.data.projectId, investorId: parsed.data.investorId, error });
     return { status: "error", message: error instanceof Error ? error.message : "No se pudo registrar el pago." };
   }
   revalidatePath("/admin/distributions");
@@ -414,6 +415,7 @@ export async function updateDistributionAction(
     await db.update(distributions).set({ ...parsed.data, receiptPathname: replacementPath ?? current.receiptPathname }).where(eq(distributions.id, distributionId));
   } catch (error) {
     if (replacementPath) await del(replacementPath).catch(() => undefined);
+    console.error("[admin:updateDistribution] Save failed", { distributionId, projectId: parsed.data.projectId, investorId: parsed.data.investorId, error });
     return { status: "error", message: error instanceof Error ? error.message : "No se pudo actualizar el pago." };
   }
   if (replacementPath && current.receiptPathname) await del(current.receiptPathname).catch(() => undefined);
