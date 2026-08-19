@@ -2,7 +2,7 @@
 
 import { Download } from "lucide-react";
 
-export function ExportButton({ filename, rows, label = "Export CSV" }: { filename: string; rows: Record<string, string | number>[]; label?: string }) {
+export function ExportButton({ filename, rows, label = "Exportar CSV" }: { filename: string; rows: Record<string, string | number>[]; label?: string }) {
   function download() {
     if (!rows.length) return;
     const headers = Object.keys(rows[0]);

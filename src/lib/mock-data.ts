@@ -35,6 +35,7 @@ const projects: DashboardData["projects"] = [
       { label: "Soft costs", amount: 2_700_000 },
       { label: "Reserve", amount: 1_800_000 },
     ],
+    milestones: [],
   },
   {
     id: "marina-vista",
@@ -52,6 +53,7 @@ const projects: DashboardData["projects"] = [
       { label: "Soft costs", amount: 3_100_000 },
       { label: "Reserve", amount: 2_100_000 },
     ],
+    milestones: [],
   },
   {
     id: "casa-verde",
@@ -69,6 +71,7 @@ const projects: DashboardData["projects"] = [
       { label: "Soft costs", amount: 1_700_000 },
       { label: "Reserve", amount: 1_100_000 },
     ],
+    milestones: [],
   },
   {
     id: "norte-logistics",
@@ -86,6 +89,7 @@ const projects: DashboardData["projects"] = [
       { label: "Soft costs", amount: 3_700_000 },
       { label: "Reserve", amount: 2_400_000 },
     ],
+    milestones: [],
   },
 ];
 

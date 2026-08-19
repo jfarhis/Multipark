@@ -9,19 +9,19 @@ import type { Session } from "@/lib/types";
 import { Logo } from "./logo";
 
 const adminNav = [
-  ["Overview", "/admin", LayoutDashboard],
-  ["Projects", "/projects", Building2],
-  ["Investors", "/admin/investors", Users],
-  ["Distributions", "/admin/distributions", HandCoins],
-  ["Documents", "/admin/documents", FileText],
-  ["Settings", "/settings", Settings],
+  ["Resumen", "/admin", LayoutDashboard],
+  ["Proyectos", "/projects", Building2],
+  ["Inversionistas", "/admin/investors", Users],
+  ["Distribuciones", "/admin/distributions", HandCoins],
+  ["Documentos", "/admin/documents", FileText],
+  ["Configuración", "/settings", Settings],
 ] as const;
 
 const investorNav = [
-  ["Dashboard", "/dashboard", LayoutDashboard],
-  ["Projects", "/projects", Building2],
-  ["Documents", "/dashboard/documents", FileText],
-  ["Settings", "/settings", Settings],
+  ["Resumen", "/dashboard", LayoutDashboard],
+  ["Proyectos", "/projects", Building2],
+  ["Documentos", "/dashboard/documents", FileText],
+  ["Configuración", "/settings", Settings],
 ] as const;
 
 function isActive(pathname: string, href: string) {
@@ -30,12 +30,12 @@ function isActive(pathname: string, href: string) {
 }
 
 function breadcrumbLabel(pathname: string) {
-  if (pathname.includes("investors")) return "Investors";
-  if (pathname.includes("documents")) return "Documents";
-  if (pathname.includes("distributions")) return "Distributions";
-  if (pathname.includes("settings")) return "Settings";
-  if (pathname.includes("projects")) return "Projects";
-  return "Portfolio overview";
+  if (pathname.includes("investors")) return "Inversionistas";
+  if (pathname.includes("documents")) return "Documentos";
+  if (pathname.includes("distributions")) return "Distribuciones";
+  if (pathname.includes("settings")) return "Configuración";
+  if (pathname.includes("projects")) return "Proyectos";
+  return "Resumen del portafolio";
 }
 
 export function AppShell({ session, children }: { session: Session; children: ReactNode }) {
@@ -47,7 +47,7 @@ export function AppShell({ session, children }: { session: Session; children: Re
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[216px] border-r border-[#202b25] bg-[#090d0b] md:flex md:flex-col">
         <div className="flex h-[66px] items-center border-b border-[#202b25] px-5"><Logo /></div>
         <div className="px-3 pt-5">
-          <p className="px-3 text-[9px] font-semibold uppercase tracking-[.16em] text-[#5e6c64]">Workspace</p>
+          <p className="px-3 text-[9px] font-semibold uppercase tracking-[.16em] text-[#5e6c64]">Espacio de trabajo</p>
           <nav className="mt-2 space-y-1">
             {nav.map(([label, href, Icon]) => {
               const active = isActive(pathname, href);
@@ -69,25 +69,25 @@ export function AppShell({ session, children }: { session: Session; children: Re
               <p className="truncate text-[9px] text-[#68766e]">{session.email}</p>
             </div>
           </div>
-          <p className="mt-3 border-t border-[#202b25] pt-2 text-[8px] uppercase tracking-[.12em] text-[#58645d]">{session.role === "admin" ? "Administrator" : "Investor access"}</p>
+          <p className="mt-3 border-t border-[#202b25] pt-2 text-[8px] uppercase tracking-[.12em] text-[#58645d]">{session.role === "admin" ? "Administrador" : "Acceso de inversionista"}</p>
         </div>
       </aside>
 
       <div className="md:pl-[216px]">
         <header className="sticky top-0 z-30 flex h-[66px] items-center gap-4 border-b border-[#202b25] bg-[#090d0b]/92 px-4 backdrop-blur-xl sm:px-6">
           <div className="min-w-0">
-            <p className="text-[9px] text-[#617068]">Gasfar Capital / Dashboard</p>
+            <p className="text-[9px] text-[#617068]">Gasfar Capital / Panel</p>
             <p className="truncate text-[12px] font-medium text-[#eaf0ec]">{breadcrumbLabel(pathname)}</p>
           </div>
           <form action="/projects" method="get" className="relative ml-auto hidden w-full max-w-[320px] sm:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#68766e]" size={13} />
-            <input name="q" aria-label="Search projects" className="input-shell h-9 pl-9 pr-3 text-[10px]" placeholder="Search projects…" />
+            <input name="q" aria-label="Buscar proyectos" className="input-shell h-9 pl-9 pr-3 text-[10px]" placeholder="Buscar proyectos…" />
           </form>
           <div className="flex items-center rounded-lg border border-[#202b25] bg-[#0f1612] p-1.5 pr-2.5">
             <UserButton />
             <div className="ml-2 hidden sm:block">
               <p className="max-w-28 truncate text-[9px] font-semibold">{session.name}</p>
-              <p className="text-[8px] capitalize text-[#66746c]">{session.role}</p>
+              <p className="text-[8px] text-[#66746c]">{session.role === "admin" ? "Administrador" : "Inversionista"}</p>
             </div>
           </div>
         </header>

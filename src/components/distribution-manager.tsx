@@ -25,14 +25,14 @@ function DistributionEditor({ distribution, data }: { distribution: Distribution
       </summary>
       <div className="border-t border-[#1a241e] bg-[#0b110e] p-4">
         <form action={updateAction} className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5 xl:items-end">
-          <label className="field-label">Project<select name="projectId" defaultValue={distribution.projectId} className="input-shell mt-2 h-10 px-3">{data.projects.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-          <label className="field-label">Investor<select name="investorId" defaultValue={distribution.investorId} className="input-shell mt-2 h-10 px-3">{data.investors.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-          <label className="field-label">Amount<input required type="number" min="0.01" step="0.01" name="amount" defaultValue={distribution.amount} className="input-shell mt-2 h-10 px-3" /></label>
-          <label className="field-label">Date<input required type="date" name="date" defaultValue={distribution.date} className="input-shell mt-2 h-10 px-3" /></label>
-          <label className="field-label">Replace receipt<input name="receipt" type="file" accept=".pdf,.png,.jpg,.jpeg" className="input-shell mt-2 h-10 p-2 text-[9px]" /></label>
-          <div className="flex flex-wrap items-center justify-between gap-3 sm:col-span-2 xl:col-span-5"><div className="flex items-center gap-2">{distribution.receiptFileUrl !== "#" ? <a href={distribution.receiptFileUrl} className="secondary-button px-3"><Download size={12} />Current receipt</a> : <span className="text-[9px] text-[#68766e]">No receipt uploaded</span>}<FormMessage state={updateState} /></div><SubmitButton pendingLabel="Updating…">Save distribution</SubmitButton></div>
+          <label className="field-label">Proyecto<select name="projectId" defaultValue={distribution.projectId} className="input-shell mt-2 h-10 px-3">{data.projects.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+          <label className="field-label">Inversionista<select name="investorId" defaultValue={distribution.investorId} className="input-shell mt-2 h-10 px-3">{data.investors.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+          <label className="field-label">Monto<input required type="number" min="0.01" step="0.01" name="amount" defaultValue={distribution.amount} className="input-shell mt-2 h-10 px-3" /></label>
+          <label className="field-label">Fecha<input required type="date" name="date" defaultValue={distribution.date} className="input-shell mt-2 h-10 px-3" /></label>
+          <label className="field-label">Reemplazar comprobante<input name="receipt" type="file" accept=".pdf,.png,.jpg,.jpeg" className="input-shell mt-2 h-10 p-2 text-[9px]" /></label>
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:col-span-2 xl:col-span-5"><div className="flex items-center gap-2">{distribution.receiptFileUrl !== "#" ? <a href={distribution.receiptFileUrl} className="secondary-button px-3"><Download size={12} />Comprobante actual</a> : <span className="text-[9px] text-[#68766e]">Sin comprobante</span>}<FormMessage state={updateState} /></div><SubmitButton pendingLabel="Actualizando…">Guardar distribución</SubmitButton></div>
         </form>
-        <form action={deleteAction} className="mt-4 flex flex-col gap-3 border-t border-[#342126] pt-4 sm:flex-row sm:items-end"><label className="field-label max-w-xs flex-1">Type DELETE<input name="confirmation" className="input-shell mt-2 h-9 px-3" autoComplete="off" /></label><SubmitButton pendingLabel="Removing…" variant="danger"><Trash2 size={12} />Remove</SubmitButton><FormMessage state={deleteState} /></form>
+        <form action={deleteAction} className="mt-4 flex flex-col gap-3 border-t border-[#342126] pt-4 sm:flex-row sm:items-end"><label className="field-label max-w-xs flex-1">Escribe ELIMINAR<input name="confirmation" className="input-shell mt-2 h-9 px-3" autoComplete="off" /></label><SubmitButton pendingLabel="Eliminando…" variant="danger"><Trash2 size={12} />Eliminar</SubmitButton><FormMessage state={deleteState} /></form>
       </div>
     </details>
   );
@@ -41,23 +41,24 @@ function DistributionEditor({ distribution, data }: { distribution: Distribution
 export function DistributionManager({ data }: { data: DashboardData }) {
   const [createState, createAction] = useActionState(createDistributionAction, initialFormState);
   const sorted = data.distributions.toSorted((a, b) => b.date.localeCompare(a.date));
+  const canCreate = data.projects.length > 0 && data.investors.length > 0;
   return (
     <>
       <section className="panel p-5">
-        <div className="flex items-start gap-3"><span className="grid size-9 place-items-center rounded-xl bg-[#22c9a5]/10 text-[#4fdbbd]"><Plus size={15} /></span><div><p className="text-[12px] font-semibold">Record a distribution</p><p className="mt-1 text-[9px] text-[#718078]">Adds the payment to the investor dashboard and optionally stores its private receipt.</p></div></div>
-        <form action={createAction} className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5 xl:items-end">
-          <label className="field-label">Project<select name="projectId" className="input-shell mt-2 h-10 px-3">{data.projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>
-          <label className="field-label">Investor<select name="investorId" className="input-shell mt-2 h-10 px-3">{data.investors.map((investor) => <option key={investor.id} value={investor.id}>{investor.name}</option>)}</select></label>
-          <label className="field-label">Amount<input required type="number" min="0.01" step="0.01" name="amount" className="input-shell mt-2 h-10 px-3" /></label>
-          <label className="field-label">Date<input required type="date" name="date" className="input-shell mt-2 h-10 px-3" /></label>
-          <label className="field-label">Receipt (optional)<input name="receipt" type="file" accept=".pdf,.png,.jpg,.jpeg" className="input-shell mt-2 h-10 p-2 text-[9px]" /></label>
-          <div className="flex flex-wrap items-center justify-between gap-3 sm:col-span-2 xl:col-span-5"><FormMessage state={createState} /><SubmitButton pendingLabel="Recording…"><HandCoins size={13} />Record distribution</SubmitButton></div>
-        </form>
+        <div className="flex items-start gap-3"><span className="grid size-9 place-items-center rounded-xl bg-[#22c9a5]/10 text-[#4fdbbd]"><Plus size={15} /></span><div><p className="text-[12px] font-semibold">Registrar una distribución</p><p className="mt-1 text-[9px] text-[#718078]">Agrega el pago al panel del inversionista y guarda opcionalmente su comprobante privado.</p></div></div>
+        {canCreate ? <form action={createAction} className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5 xl:items-end">
+          <label className="field-label">Proyecto<select name="projectId" className="input-shell mt-2 h-10 px-3">{data.projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>
+          <label className="field-label">Inversionista<select name="investorId" className="input-shell mt-2 h-10 px-3">{data.investors.map((investor) => <option key={investor.id} value={investor.id}>{investor.name}</option>)}</select></label>
+          <label className="field-label">Monto<input required type="number" min="0.01" step="0.01" name="amount" className="input-shell mt-2 h-10 px-3" /></label>
+          <label className="field-label">Fecha<input required type="date" name="date" className="input-shell mt-2 h-10 px-3" /></label>
+          <label className="field-label">Comprobante (opcional)<input name="receipt" type="file" accept=".pdf,.png,.jpg,.jpeg" className="input-shell mt-2 h-10 p-2 text-[9px]" /></label>
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:col-span-2 xl:col-span-5"><FormMessage state={createState} /><SubmitButton pendingLabel="Registrando…"><HandCoins size={13} />Registrar distribución</SubmitButton></div>
+        </form> : <div className="mt-5 rounded-xl border border-[#2a342f] bg-[#101713] p-4 text-[10px] leading-5 text-[#7f8b84]">Primero crea un proyecto, agrega un inversionista y asígnale una participación.</div>}
       </section>
       <section className="panel mt-4 overflow-hidden">
-        <div className="border-b border-[#202b25] px-4 py-3"><p className="text-[11px] font-semibold">Distribution history</p><p className="mt-1 text-[8px] text-[#657269]">Select any row to edit, replace its receipt, or remove it.</p></div>
+        <div className="border-b border-[#202b25] px-4 py-3"><p className="text-[11px] font-semibold">Historial de distribuciones</p><p className="mt-1 text-[8px] text-[#657269]">Selecciona una fila para editar, reemplazar el comprobante o eliminarla.</p></div>
         <div>{sorted.map((distribution) => <DistributionEditor key={distribution.id} distribution={distribution} data={data} />)}</div>
-        {sorted.length === 0 ? <div className="p-10 text-center text-[10px] text-[#718078]">No distributions have been recorded.</div> : null}
+        {sorted.length === 0 ? <div className="p-10 text-center text-[10px] text-[#718078]">Todavía no hay distribuciones registradas.</div> : null}
       </section>
     </>
   );

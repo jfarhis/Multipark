@@ -7,11 +7,18 @@ const styles: Record<ProjectStatus, string> = {
   complete: "bg-[#27d797]/10 text-[#47e1a7] ring-[#27d797]/20",
 };
 
+const labels: Record<ProjectStatus, string> = {
+  "pre-construction": "Preconstrucción",
+  "in-progress": "En progreso",
+  delayed: "Retrasado",
+  complete: "Terminado",
+};
+
 export function StatusBadge({ status }: { status: ProjectStatus }) {
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[8px] font-semibold capitalize ring-1 ring-inset ${styles[status]}`}>
       <span className="size-1.5 rounded-full bg-current" />
-      {status.replace("-", " ")}
+      {labels[status]}
     </span>
   );
 }

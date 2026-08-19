@@ -9,5 +9,5 @@ export default async function SettingsPage() {
   const [investor] = session?.role === "investor" && session.investorId
     ? await getDb().select().from(investors).where(eq(investors.id, session.investorId)).limit(1)
     : [];
-  return <><PageHeading eyebrow="Account preferences" title="Settings" description="Manage contact details, banking information, and notification preferences." /><SettingsForm session={session!} investor={investor} /></>;
+  return <><PageHeading eyebrow="Preferencias de cuenta" title="Configuración" description="Administra tus datos de contacto, información bancaria y preferencias de notificaciones." /><SettingsForm session={session!} investor={investor} /></>;
 }

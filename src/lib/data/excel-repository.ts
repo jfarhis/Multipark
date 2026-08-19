@@ -11,7 +11,7 @@ import type { DashboardRepository } from "./repository";
 
 const rows = <T>(workbook: XLSX.WorkBook, sheetName: string) => {
   const sheet = workbook.Sheets[sheetName];
-  if (!sheet) throw new Error(`Missing Excel sheet: ${sheetName}`);
+  if (!sheet) throw new Error(`Falta la hoja de Excel: ${sheetName}`);
   return XLSX.utils.sheet_to_json<T>(sheet, { raw: false });
 };
 
@@ -49,6 +49,7 @@ export class ExcelDashboardRepository implements DashboardRepository {
       estimatedCompletionDate: row.est_completion_date,
       projectedIrr: Number(row.projected_irr ?? 0),
       budgetBreakdown: [],
+      milestones: [],
     }));
     const stakes: InvestorProjectStake[] = stakeRows.map((row) => ({
       investorId: row.investor_id,

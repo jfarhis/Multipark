@@ -4,13 +4,13 @@ import type {
   Project,
 } from "./types";
 
-export const money = new Intl.NumberFormat("en-US", {
+export const money = new Intl.NumberFormat("es-MX", {
   style: "currency",
   currency: "USD",
   maximumFractionDigits: 0,
 });
 
-export const compactMoney = new Intl.NumberFormat("en-US", {
+export const compactMoney = new Intl.NumberFormat("es-MX", {
   style: "currency",
   currency: "USD",
   notation: "compact",
@@ -93,7 +93,7 @@ export function portfolioMetrics(data: DashboardData) {
 }
 
 export function completionLabel(project: Project) {
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("es-MX", {
     month: "short",
     year: "numeric",
   }).format(new Date(`${project.estimatedCompletionDate}T12:00:00`));

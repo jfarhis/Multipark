@@ -22,7 +22,7 @@ const grid = { color: "rgba(76, 94, 84, .2)", drawTicks: false };
 const ticks = { color: "#65736b", font: { size: 9 }, padding: 9 };
 const tooltip = { displayColors: false, backgroundColor: "#17211b", titleColor: "#8c9991", bodyColor: "#fff", padding: 10, cornerRadius: 8 };
 
-export function DistributionLineChart({ values = [112, 146, 139, 184, 211, 238, 274], labels = ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"] }: { values?: number[]; labels?: string[] }) {
+export function DistributionLineChart({ values = [], labels = [] }: { values?: number[]; labels?: string[] }) {
   return (
     <Line
       data={{
@@ -47,16 +47,16 @@ export function DistributionLineChart({ values = [112, 146, 139, 184, 211, 238, 
           },
         }],
       }}
-      options={{ responsive: true, maintainAspectRatio: false, animation: { duration: 700 }, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => `$${context.parsed.y}k distributed` } } }, scales: { x: { border: { display: false }, grid: { display: false }, ticks }, y: { border: { display: false }, grid, ticks: { ...ticks, callback: (value) => `$${value}k` } } } }}
+      options={{ responsive: true, maintainAspectRatio: false, animation: { duration: 700 }, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => `$${context.parsed.y} mil distribuidos` } } }, scales: { x: { border: { display: false }, grid: { display: false }, ticks }, y: { border: { display: false }, grid, ticks: { ...ticks, callback: (value) => `$${value} mil` } } } }}
     />
   );
 }
 
-export function OccupancyBarChart({ values, labels = ["Aurora", "Marina", "Casa Verde", "Norte"] }: { values: number[]; labels?: string[] }) {
+export function OccupancyBarChart({ values, labels = [] }: { values: number[]; labels?: string[] }) {
   return (
     <Bar
       data={{ labels, datasets: [{ data: values, backgroundColor: values.map((_, index) => index === 2 ? "#22c9a5" : "rgba(139,114,255,.68)"), borderRadius: 5, borderSkipped: false, barThickness: 18 }] }}
-      options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => `${context.parsed.y}% occupied` } } }, scales: { x: { border: { display: false }, grid: { display: false }, ticks }, y: { min: 0, max: 100, border: { display: false }, grid, ticks: { ...ticks, callback: (value) => `${value}%` } } } }}
+      options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => `${context.parsed.y}% ocupado` } } }, scales: { x: { border: { display: false }, grid: { display: false }, ticks }, y: { min: 0, max: 100, border: { display: false }, grid, ticks: { ...ticks, callback: (value) => `${value}%` } } } }}
     />
   );
 }
@@ -68,7 +68,7 @@ export function PortfolioActivityDonut({ items }: { items: { label: string; amou
       <div className="relative mx-auto h-[176px] w-[176px]">
         <Doughnut data={{ labels: items.map((item) => item.label), datasets: [{ data: items.map((item) => item.amount), backgroundColor: palette, borderColor: "#0f1512", borderWidth: 5, borderRadius: 7, hoverOffset: 2 }] }} options={{ cutout: "72%", maintainAspectRatio: false, rotation: -100, circumference: 350, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => compactMoney.format(context.parsed) } } } }} />
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
-          <div><p className="tabular text-[18px] font-semibold">{compactMoney.format(total)}</p><p className="mt-1 text-[8px] uppercase tracking-[.12em] text-[#67756d]">Total budget</p></div>
+          <div><p className="tabular text-[18px] font-semibold">{compactMoney.format(total)}</p><p className="mt-1 text-[8px] uppercase tracking-[.12em] text-[#67756d]">Presupuesto total</p></div>
         </div>
       </div>
       <div className="space-y-1">
@@ -86,7 +86,7 @@ export function PortfolioActivityDonut({ items }: { items: { label: string; amou
 export function BudgetDonutChart({ items }: { items: { label: string; amount: number }[] }) {
   return (
     <div className="grid items-center gap-5 sm:grid-cols-[160px_1fr]">
-      <div className="relative h-[160px]"><Doughnut data={{ labels: items.map((item) => item.label), datasets: [{ data: items.map((item) => item.amount), backgroundColor: palette, borderColor: "#0f1512", borderWidth: 4, hoverOffset: 4 }] }} options={{ cutout: "72%", maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip } }} /><div className="pointer-events-none absolute inset-0 grid place-items-center text-center"><div><p className="text-[18px] font-semibold">100%</p><p className="text-[8px] text-[#68766e]">Allocated</p></div></div></div>
+      <div className="relative h-[160px]"><Doughnut data={{ labels: items.map((item) => item.label), datasets: [{ data: items.map((item) => item.amount), backgroundColor: palette, borderColor: "#0f1512", borderWidth: 4, hoverOffset: 4 }] }} options={{ cutout: "72%", maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip } }} /><div className="pointer-events-none absolute inset-0 grid place-items-center text-center"><div><p className="text-[18px] font-semibold">100%</p><p className="text-[8px] text-[#68766e]">Asignado</p></div></div></div>
       <div className="space-y-3">{items.map((item, index) => <div key={item.label} className="flex items-center justify-between gap-3 text-[9px]"><span className="flex items-center gap-2 text-[#8a968e]"><span className="size-2 rounded-full" style={{ background: palette[index % palette.length] }} />{item.label}</span><span className="tabular font-medium">{compactMoney.format(item.amount)}</span></div>)}</div>
     </div>
   );

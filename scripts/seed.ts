@@ -39,6 +39,7 @@ await db
       estimatedCompletionDate: projects.estimatedCompletionDate,
       projectedIrr: projects.projectedIrr,
       budgetBreakdown: projects.budgetBreakdown,
+      milestones: projects.milestones,
       updatedAt: new Date(),
     },
   });

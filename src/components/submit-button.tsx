@@ -3,7 +3,7 @@
 import { LoaderCircle } from "lucide-react";
 import { useFormStatus } from "react-dom";
 
-export function SubmitButton({ children, pendingLabel = "Saving…", variant = "primary" }: { children: React.ReactNode; pendingLabel?: string; variant?: "primary" | "secondary" | "danger" }) {
+export function SubmitButton({ children, pendingLabel = "Guardando…", variant = "primary" }: { children: React.ReactNode; pendingLabel?: string; variant?: "primary" | "secondary" | "danger" }) {
   const { pending } = useFormStatus();
   const className = variant === "danger" ? "danger-button" : variant === "secondary" ? "secondary-button" : "primary-button";
   return (

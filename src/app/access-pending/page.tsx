@@ -8,14 +8,14 @@ export default function AccessPendingPage() {
         <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f5b82e]/10 text-[#f5b82e]">
           <ShieldAlert size={21} />
         </span>
-        <p className="eyebrow mt-5">Account review</p>
-        <h1 className="mt-3 text-[20px] font-semibold">Your account needs access</h1>
+        <p className="eyebrow mt-5">Revisión de cuenta</p>
+        <h1 className="mt-3 text-[20px] font-semibold">Tu cuenta necesita acceso</h1>
         <p className="mt-3 text-[12px] leading-6 text-[#84908a]">
-          This email is authenticated, but it is not connected to an investor record yet.
-          Ask the Gasfar administrator to add or invite this email.
+          Este correo está autenticado, pero todavía no está conectado a un inversionista.
+          Pide al administrador de Gasfar que agregue o invite este correo.
         </p>
         <SignOutButton redirectUrl="/login">
-          <button className="secondary-button mt-6 px-4">Use a different account</button>
+          <button className="secondary-button mt-6 px-4">Usar otra cuenta</button>
         </SignOutButton>
       </section>
     </main>

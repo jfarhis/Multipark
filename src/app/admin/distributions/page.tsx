@@ -4,5 +4,5 @@ import { dashboardRepository } from "@/lib/data/repository";
 
 export default async function AdminDistributionsPage() {
   const data = await dashboardRepository.getDashboardData();
-  return <><PageHeading eyebrow="Payments" title="Distribution management" description="Record payments, correct details, attach receipts, and control the history investors see." /><DistributionManager data={data} /></>;
+  return <><PageHeading eyebrow="Pagos" title="Administración de distribuciones" description="Registra pagos, corrige datos, adjunta comprobantes y controla el historial visible para inversionistas." /><DistributionManager data={data} /></>;
 }

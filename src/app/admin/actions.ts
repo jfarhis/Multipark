@@ -19,14 +19,14 @@ import type { FormState } from "@/lib/form-state";
 
 async function requireAdmin() {
   const session = await getSession();
-  if (session?.role !== "admin") throw new Error("Administrator access required.");
+  if (session?.role !== "admin") throw new Error("Se requiere acceso de administrador.");
   return session;
 }
 
 const investorSchema = z.object({
-  name: z.string().trim().min(2, "Enter the investor's full name."),
-  email: z.email("Enter a valid email address.").transform((value) => value.toLowerCase()),
-  bankDetails: z.string().trim().max(120).default("Not provided"),
+  name: z.string().trim().min(2, "Escribe el nombre completo del inversionista."),
+  email: z.email("Escribe un correo electrónico válido.").transform((value) => value.toLowerCase()),
+  bankDetails: z.string().trim().max(120).default("No proporcionado"),
 });
 
 export async function inviteInvestorAction(
@@ -37,10 +37,10 @@ export async function inviteInvestorAction(
   const parsed = investorSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
-    bankDetails: formData.get("bankDetails") || "Not provided",
+    bankDetails: formData.get("bankDetails") || "No proporcionado",
   });
   if (!parsed.success) {
-    return { status: "error", message: parsed.error.issues[0]?.message ?? "Check the investor details." };
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos del inversionista." };
   }
 
   const db = getDb();
@@ -48,7 +48,7 @@ export async function inviteInvestorAction(
   try {
     await db.insert(investors).values({ id, ...parsed.data });
   } catch {
-    return { status: "error", message: "That email is already connected to an investor." };
+    return { status: "error", message: "Ese correo ya está conectado a un inversionista." };
   }
 
   try {
@@ -63,23 +63,23 @@ export async function inviteInvestorAction(
     revalidatePath("/admin/investors");
     return {
       status: "error",
-      message: "The investor was saved, but the invitation email could not be sent. You can retry it later.",
+      message: "El inversionista se guardó, pero no se pudo enviar la invitación. Puedes intentarlo de nuevo más tarde.",
     };
   }
 
   revalidatePath("/admin/investors");
-  return { status: "success", message: `Invitation sent to ${parsed.data.email}.` };
+  return { status: "success", message: `Invitación enviada a ${parsed.data.email}.` };
 }
 
 const projectSchema = z.object({
-  name: z.string().trim().min(2),
-  location: z.string().trim().min(2),
+  name: z.string().trim().min(2, "Escribe el nombre del proyecto."),
+  location: z.string().trim().min(2, "Escribe la ubicación del proyecto."),
   status: z.enum(["pre-construction", "in-progress", "delayed", "complete"]),
-  constructionPct: z.coerce.number().min(0).max(100),
-  occupancyPct: z.coerce.number().min(0).max(100),
-  budgetTotal: z.coerce.number().positive(),
-  estimatedCompletionDate: z.string().min(10),
-  projectedIrr: z.coerce.number().min(-100).max(100),
+  constructionPct: z.coerce.number().min(0, "El avance no puede ser negativo.").max(100, "El avance no puede superar 100%."),
+  occupancyPct: z.coerce.number().min(0, "La ocupación no puede ser negativa.").max(100, "La ocupación no puede superar 100%."),
+  budgetTotal: z.coerce.number().positive("El presupuesto debe ser mayor que cero."),
+  estimatedCompletionDate: z.string().min(10, "Selecciona la fecha estimada de terminación."),
+  projectedIrr: z.coerce.number().min(-100, "La TIR mínima es -100%.").max(100, "La TIR máxima es 100%."),
 });
 
 export async function createProjectAction(
@@ -89,7 +89,7 @@ export async function createProjectAction(
   await requireAdmin();
   const parsed = projectSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
-    return { status: "error", message: parsed.error.issues[0]?.message ?? "Check the project details." };
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos del proyecto." };
   }
   const baseId = parsed.data.name
     .toLowerCase()
@@ -102,17 +102,18 @@ export async function createProjectAction(
       id: baseId,
       ...parsed.data,
       budgetBreakdown: [
-        { label: "Construction", amount: Math.round(parsed.data.budgetTotal * 0.55) },
-        { label: "Land", amount: Math.round(parsed.data.budgetTotal * 0.25) },
-        { label: "Soft costs", amount: Math.round(parsed.data.budgetTotal * 0.12) },
-        { label: "Reserve", amount: Math.round(parsed.data.budgetTotal * 0.08) },
+        { label: "Construcción", amount: Math.round(parsed.data.budgetTotal * 0.55) },
+        { label: "Terreno", amount: Math.round(parsed.data.budgetTotal * 0.25) },
+        { label: "Costos indirectos", amount: Math.round(parsed.data.budgetTotal * 0.12) },
+        { label: "Reserva", amount: Math.round(parsed.data.budgetTotal * 0.08) },
       ],
+      milestones: [],
     });
   } catch {
-    return { status: "error", message: "A project with that name already exists." };
+    return { status: "error", message: "Ya existe un proyecto con ese nombre." };
   }
   revalidatePath("/admin");
-  return { status: "success", message: `${parsed.data.name} was created.` };
+  return { status: "success", message: `${parsed.data.name} fue creado.` };
 }
 
 export async function updateInvestorStakesAction(
@@ -131,7 +132,7 @@ export async function updateInvestorStakesAction(
     const stakePct = Number(rawValue);
     const capitalCommitted = projectBudget.get(projectId);
     if (!Number.isFinite(stakePct) || stakePct < 0 || stakePct > 100 || capitalCommitted === undefined) {
-      return { status: "error", message: "Every ownership percentage must be between 0 and 100." };
+      return { status: "error", message: "Cada porcentaje de participación debe estar entre 0 y 100." };
     }
     changes.push({ projectId, stakePct, capitalCommitted });
   }
@@ -143,12 +144,12 @@ export async function updateInvestorStakesAction(
     })));
   revalidatePath(`/admin/investors/${investorId}`);
   revalidatePath("/admin");
-  return { status: "success", message: "Ownership percentages saved." };
+  return { status: "success", message: "Participaciones guardadas." };
 }
 
 const documentSchema = z.object({
-  title: z.string().trim().min(2),
-  projectId: z.string().min(1),
+  title: z.string().trim().min(2, "Escribe el título del documento."),
+  projectId: z.string().min(1, "Selecciona un proyecto."),
   investorId: z.string().optional(),
   type: z.enum(["receipt", "report", "photo"]),
 });
@@ -166,13 +167,13 @@ export async function uploadDocumentAction(
     type: formData.get("type"),
   });
   if (!parsed.success || !(file instanceof File) || file.size === 0) {
-    return { status: "error", message: "Choose a file and complete all document fields." };
+    return { status: "error", message: "Selecciona un archivo y completa todos los campos." };
   }
   if (parsed.data.investorId && !(await validatePosition(parsed.data.projectId, parsed.data.investorId))) {
-    return { status: "error", message: "That investor does not have ownership in the selected project." };
+    return { status: "error", message: "Ese inversionista no tiene participación en el proyecto seleccionado." };
   }
   if (file.size > 10 * 1024 * 1024) {
-    return { status: "error", message: "Documents must be 10 MB or smaller." };
+    return { status: "error", message: "Los documentos deben pesar 10 MB o menos." };
   }
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const pathname = `projects/${parsed.data.projectId}/${crypto.randomUUID()}-${safeName}`;
@@ -188,12 +189,12 @@ export async function uploadDocumentAction(
       type: parsed.data.type,
     });
   } catch {
-    return { status: "error", message: "The secure upload could not be completed. Please try again." };
+    return { status: "error", message: "No se pudo completar la carga segura. Inténtalo de nuevo." };
   }
   revalidatePath("/admin/documents");
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${parsed.data.projectId}`);
-  return { status: "success", message: "Document uploaded securely." };
+  return { status: "success", message: "Documento cargado de forma segura." };
 }
 
 const projectEditSchema = projectSchema.extend({
@@ -211,32 +212,41 @@ export async function updateProjectAction(
   await requireAdmin();
   const parsed = projectEditSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
-    return { status: "error", message: parsed.error.issues[0]?.message ?? "Check the project details." };
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos del proyecto." };
   }
   const { constructionAmount, landAmount, softCostsAmount, reserveAmount, ...project } = parsed.data;
   const breakdownTotal = constructionAmount + landAmount + softCostsAmount + reserveAmount;
   if (Math.abs(breakdownTotal - project.budgetTotal) > 1) {
-    return { status: "error", message: "The four budget categories must add up to the total budget." };
+    return { status: "error", message: "Las cuatro categorías deben sumar el presupuesto total." };
+  }
+  const milestones = Array.from({ length: 6 }, (_, index) => ({
+    label: String(formData.get(`milestoneLabel${index}`) ?? "").trim(),
+    detail: String(formData.get(`milestoneDetail${index}`) ?? "").trim(),
+    complete: formData.get(`milestoneComplete${index}`) === "on",
+  })).filter((milestone) => milestone.label.length > 0);
+  if (milestones.some((milestone) => milestone.detail.length === 0)) {
+    return { status: "error", message: "Cada hito con nombre necesita una descripción o fecha." };
   }
   try {
     await getDb().update(projects).set({
       ...project,
       budgetBreakdown: [
-        { label: "Construction", amount: constructionAmount },
-        { label: "Land", amount: landAmount },
-        { label: "Soft costs", amount: softCostsAmount },
-        { label: "Reserve", amount: reserveAmount },
+        { label: "Construcción", amount: constructionAmount },
+        { label: "Terreno", amount: landAmount },
+        { label: "Costos indirectos", amount: softCostsAmount },
+        { label: "Reserva", amount: reserveAmount },
       ],
+      milestones,
       updatedAt: new Date(),
     }).where(eq(projects.id, projectId));
   } catch (error) {
     console.error("[admin:updateProject] Save failed", { projectId, error });
-    return { status: "error", message: "The project could not be saved. Please try again." };
+    return { status: "error", message: "No se pudo guardar el proyecto. Inténtalo de nuevo." };
   }
   revalidatePath("/admin");
   revalidatePath("/projects");
   revalidatePath(`/projects/${projectId}`);
-  return { status: "success", message: "Project details saved." };
+  return { status: "success", message: "Proyecto guardado." };
 }
 
 export async function deleteProjectAction(
@@ -247,7 +257,7 @@ export async function deleteProjectAction(
 ): Promise<FormState> {
   await requireAdmin();
   if (formData.get("confirmation") !== expectedName) {
-    return { status: "error", message: `Type ${expectedName} exactly to confirm.` };
+    return { status: "error", message: `Escribe ${expectedName} exactamente para confirmar.` };
   }
   const db = getDb();
   const [documentRows, distributionRows] = await Promise.all([
@@ -258,7 +268,7 @@ export async function deleteProjectAction(
   try {
     if (paths.length) await del(paths);
   } catch {
-    return { status: "error", message: "The private files could not be removed, so the project was left unchanged." };
+    return { status: "error", message: "No se pudieron eliminar los archivos privados; el proyecto no fue modificado." };
   }
   await db.delete(projects).where(eq(projects.id, projectId));
   revalidatePath("/admin");
@@ -267,7 +277,7 @@ export async function deleteProjectAction(
 }
 
 const investorEditSchema = investorSchema.extend({
-  phone: z.string().trim().max(40).optional(),
+  phone: z.string().trim().max(40, "El teléfono es demasiado largo.").optional(),
 });
 
 export async function updateInvestorAction(
@@ -280,17 +290,17 @@ export async function updateInvestorAction(
     name: formData.get("name"),
     email: formData.get("email"),
     phone: formData.get("phone") || undefined,
-    bankDetails: formData.get("bankDetails") || "Not provided",
+    bankDetails: formData.get("bankDetails") || "No proporcionado",
   });
-  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Check the investor details." };
+  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos del inversionista." };
   try {
     await getDb().update(investors).set({ ...parsed.data, updatedAt: new Date() }).where(eq(investors.id, investorId));
   } catch {
-    return { status: "error", message: "That email is already assigned to another investor." };
+    return { status: "error", message: "Ese correo ya está asignado a otro inversionista." };
   }
   revalidatePath("/admin/investors");
   revalidatePath(`/admin/investors/${investorId}`);
-  return { status: "success", message: "Investor details saved." };
+  return { status: "success", message: "Datos del inversionista guardados." };
 }
 
 export async function deleteInvestorAction(
@@ -301,7 +311,7 @@ export async function deleteInvestorAction(
 ): Promise<FormState> {
   await requireAdmin();
   if (String(formData.get("confirmation") ?? "").toLowerCase() !== expectedEmail.toLowerCase()) {
-    return { status: "error", message: `Type ${expectedEmail} exactly to confirm.` };
+    return { status: "error", message: `Escribe ${expectedEmail} exactamente para confirmar.` };
   }
   const db = getDb();
   const [documentRows, distributionRows] = await Promise.all([
@@ -312,7 +322,7 @@ export async function deleteInvestorAction(
   try {
     if (paths.length) await del(paths);
   } catch {
-    return { status: "error", message: "The investor's private files could not be removed, so the account was left unchanged." };
+    return { status: "error", message: "No se pudieron eliminar los archivos privados; la cuenta no fue modificada." };
   }
   await db.delete(investors).where(eq(investors.id, investorId));
   revalidatePath("/admin/investors");
@@ -321,15 +331,15 @@ export async function deleteInvestorAction(
 }
 
 const distributionSchema = z.object({
-  projectId: z.string().min(1),
-  investorId: z.string().min(1),
-  amount: z.coerce.number().positive(),
-  date: z.string().min(10),
+  projectId: z.string().min(1, "Selecciona un proyecto."),
+  investorId: z.string().min(1, "Selecciona un inversionista."),
+  amount: z.coerce.number().positive("El monto debe ser mayor que cero."),
+  date: z.string().min(10, "Selecciona una fecha."),
 });
 
 async function uploadReceipt(file: FormDataEntryValue | null, projectId: string) {
   if (!(file instanceof File) || file.size === 0) return null;
-  if (file.size > 10 * 1024 * 1024) throw new Error("Receipt files must be 10 MB or smaller.");
+  if (file.size > 10 * 1024 * 1024) throw new Error("Los comprobantes deben pesar 10 MB o menos.");
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const blob = await put(`receipts/${projectId}/${crypto.randomUUID()}-${safeName}`, file, { access: "private", addRandomSuffix: false });
   return blob.pathname;
@@ -346,9 +356,9 @@ export async function createDistributionAction(
 ): Promise<FormState> {
   await requireAdmin();
   const parsed = distributionSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Check the distribution details." };
+  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos de la distribución." };
   if (!(await validatePosition(parsed.data.projectId, parsed.data.investorId))) {
-    return { status: "error", message: "Assign this investor ownership in the project before recording a distribution." };
+    return { status: "error", message: "Asigna una participación al inversionista antes de registrar una distribución." };
   }
   let receiptPathname: string | null = null;
   try {
@@ -356,14 +366,14 @@ export async function createDistributionAction(
     await getDb().insert(distributions).values({ id: `dist-${crypto.randomUUID()}`, ...parsed.data, receiptPathname });
   } catch (error) {
     if (receiptPathname) await del(receiptPathname).catch(() => undefined);
-    return { status: "error", message: error instanceof Error ? error.message : "The distribution could not be created." };
+    return { status: "error", message: error instanceof Error ? error.message : "No se pudo registrar la distribución." };
   }
   revalidatePath("/admin/distributions");
   revalidatePath("/admin");
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${parsed.data.projectId}`);
-  return { status: "success", message: "Distribution recorded." };
+  return { status: "success", message: "Distribución registrada." };
 }
 
 export async function updateDistributionAction(
@@ -373,20 +383,20 @@ export async function updateDistributionAction(
 ): Promise<FormState> {
   await requireAdmin();
   const parsed = distributionSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Check the distribution details." };
+  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos de la distribución." };
   if (!(await validatePosition(parsed.data.projectId, parsed.data.investorId))) {
-    return { status: "error", message: "Assign this investor ownership in the project before moving the distribution." };
+    return { status: "error", message: "Asigna una participación al inversionista antes de mover la distribución." };
   }
   const db = getDb();
   const [current] = await db.select().from(distributions).where(eq(distributions.id, distributionId)).limit(1);
-  if (!current) return { status: "error", message: "Distribution not found." };
+  if (!current) return { status: "error", message: "No se encontró la distribución." };
   let replacementPath: string | null = null;
   try {
     replacementPath = await uploadReceipt(formData.get("receipt"), parsed.data.projectId);
     await db.update(distributions).set({ ...parsed.data, receiptPathname: replacementPath ?? current.receiptPathname }).where(eq(distributions.id, distributionId));
   } catch (error) {
     if (replacementPath) await del(replacementPath).catch(() => undefined);
-    return { status: "error", message: error instanceof Error ? error.message : "The distribution could not be updated." };
+    return { status: "error", message: error instanceof Error ? error.message : "No se pudo actualizar la distribución." };
   }
   if (replacementPath && current.receiptPathname) await del(current.receiptPathname).catch(() => undefined);
   revalidatePath("/admin/distributions");
@@ -395,7 +405,7 @@ export async function updateDistributionAction(
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${current.projectId}`);
   revalidatePath(`/projects/${parsed.data.projectId}`);
-  return { status: "success", message: "Distribution updated." };
+  return { status: "success", message: "Distribución actualizada." };
 }
 
 export async function deleteDistributionAction(
@@ -404,14 +414,14 @@ export async function deleteDistributionAction(
   formData: FormData,
 ): Promise<FormState> {
   await requireAdmin();
-  if (formData.get("confirmation") !== "DELETE") return { status: "error", message: "Type DELETE to confirm." };
+  if (formData.get("confirmation") !== "ELIMINAR") return { status: "error", message: "Escribe ELIMINAR para confirmar." };
   const db = getDb();
   const [current] = await db.select().from(distributions).where(eq(distributions.id, distributionId)).limit(1);
-  if (!current) return { status: "error", message: "Distribution not found." };
+  if (!current) return { status: "error", message: "No se encontró la distribución." };
   try {
     if (current.receiptPathname) await del(current.receiptPathname);
   } catch {
-    return { status: "error", message: "The private receipt could not be removed, so the record was left unchanged." };
+    return { status: "error", message: "No se pudo eliminar el comprobante privado; el registro no fue modificado." };
   }
   await db.delete(distributions).where(eq(distributions.id, distributionId));
   revalidatePath("/admin/distributions");
@@ -419,7 +429,7 @@ export async function deleteDistributionAction(
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${current.projectId}`);
-  return { status: "success", message: "Distribution removed." };
+  return { status: "success", message: "Distribución eliminada." };
 }
 
 export async function updateDocumentAction(
@@ -434,18 +444,18 @@ export async function updateDocumentAction(
     investorId: formData.get("investorId") || undefined,
     type: formData.get("type"),
   });
-  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Check the document details." };
+  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos del documento." };
   if (parsed.data.investorId && !(await validatePosition(parsed.data.projectId, parsed.data.investorId))) {
-    return { status: "error", message: "That investor does not have ownership in the selected project." };
+    return { status: "error", message: "Ese inversionista no tiene participación en el proyecto seleccionado." };
   }
   const db = getDb();
   const [current] = await db.select().from(documents).where(eq(documents.id, documentId)).limit(1);
-  if (!current) return { status: "error", message: "Document not found." };
+  if (!current) return { status: "error", message: "No se encontró el documento." };
   const file = formData.get("file");
   let replacementPath: string | null = null;
   try {
     if (file instanceof File && file.size > 0) {
-      if (file.size > 10 * 1024 * 1024) return { status: "error", message: "Documents must be 10 MB or smaller." };
+      if (file.size > 10 * 1024 * 1024) return { status: "error", message: "Los documentos deben pesar 10 MB o menos." };
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
       replacementPath = (await put(`projects/${parsed.data.projectId}/${crypto.randomUUID()}-${safeName}`, file, { access: "private", addRandomSuffix: false })).pathname;
     }
@@ -457,14 +467,14 @@ export async function updateDocumentAction(
     }).where(eq(documents.id, documentId));
   } catch {
     if (replacementPath) await del(replacementPath).catch(() => undefined);
-    return { status: "error", message: "The document could not be updated." };
+    return { status: "error", message: "No se pudo actualizar el documento." };
   }
   if (replacementPath && current.pathname) await del(current.pathname).catch(() => undefined);
   revalidatePath("/admin/documents");
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${current.projectId}`);
   revalidatePath(`/projects/${parsed.data.projectId}`);
-  return { status: "success", message: "Document updated." };
+  return { status: "success", message: "Documento actualizado." };
 }
 
 export async function deleteDocumentAction(
@@ -473,20 +483,20 @@ export async function deleteDocumentAction(
   formData: FormData,
 ): Promise<FormState> {
   await requireAdmin();
-  if (formData.get("confirmation") !== "DELETE") return { status: "error", message: "Type DELETE to confirm." };
+  if (formData.get("confirmation") !== "ELIMINAR") return { status: "error", message: "Escribe ELIMINAR para confirmar." };
   const db = getDb();
   const [current] = await db.select().from(documents).where(eq(documents.id, documentId)).limit(1);
-  if (!current) return { status: "error", message: "Document not found." };
+  if (!current) return { status: "error", message: "No se encontró el documento." };
   try {
     if (current.pathname) await del(current.pathname);
   } catch {
-    return { status: "error", message: "The private file could not be removed, so the document was left unchanged." };
+    return { status: "error", message: "No se pudo eliminar el archivo privado; el documento no fue modificado." };
   }
   await db.delete(documents).where(eq(documents.id, documentId));
   revalidatePath("/admin/documents");
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${current.projectId}`);
-  return { status: "success", message: "Document removed." };
+  return { status: "success", message: "Documento eliminado." };
 }
 
 const workbookInvestorSchema = z.object({ id: z.string().min(1), name: z.string().min(2), email: z.email(), bank_details: z.string().optional() });
@@ -501,14 +511,14 @@ export async function importWorkbookAction(
 ): Promise<FormState> {
   await requireAdmin();
   const file = formData.get("workbook");
-  if (!(file instanceof File) || file.size === 0) return { status: "error", message: "Choose an Excel workbook." };
-  if (file.size > 15 * 1024 * 1024) return { status: "error", message: "The workbook must be 15 MB or smaller." };
+  if (!(file instanceof File) || file.size === 0) return { status: "error", message: "Selecciona un archivo de Excel." };
+  if (file.size > 15 * 1024 * 1024) return { status: "error", message: "El archivo de Excel debe pesar 15 MB o menos." };
   try {
     const XLSX = await import("xlsx");
     const workbook = XLSX.read(await file.arrayBuffer(), { type: "array" });
     const sheetRows = (name: string) => {
       const sheet = workbook.Sheets[name];
-      if (!sheet) throw new Error(`Missing sheet: ${name}`);
+      if (!sheet) throw new Error(`Falta la hoja: ${name}`);
       return XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { raw: false });
     };
     const investorRows = z.array(workbookInvestorSchema).parse(sheetRows("Investors"));
@@ -519,10 +529,10 @@ export async function importWorkbookAction(
     const db = getDb();
 
     for (const row of investorRows) {
-      await db.insert(investors).values({ id: row.id, name: row.name, email: row.email.toLowerCase(), bankDetails: row.bank_details || "Not provided" }).onConflictDoUpdate({ target: investors.id, set: { name: row.name, email: row.email.toLowerCase(), bankDetails: row.bank_details || "Not provided", updatedAt: new Date() } });
+      await db.insert(investors).values({ id: row.id, name: row.name, email: row.email.toLowerCase(), bankDetails: row.bank_details || "No proporcionado" }).onConflictDoUpdate({ target: investors.id, set: { name: row.name, email: row.email.toLowerCase(), bankDetails: row.bank_details || "No proporcionado", updatedAt: new Date() } });
     }
     for (const row of projectRows) {
-      const values = { id: row.id, name: row.name, location: row.location, status: row.status, constructionPct: row.construction_pct, occupancyPct: row.occupancy_pct, budgetTotal: row.budget_total, estimatedCompletionDate: row.est_completion_date, projectedIrr: row.projected_irr, budgetBreakdown: [{ label: "Construction", amount: Math.round(row.budget_total * .55) }, { label: "Land", amount: Math.round(row.budget_total * .25) }, { label: "Soft costs", amount: Math.round(row.budget_total * .12) }, { label: "Reserve", amount: Math.round(row.budget_total * .08) }] };
+      const values = { id: row.id, name: row.name, location: row.location, status: row.status, constructionPct: row.construction_pct, occupancyPct: row.occupancy_pct, budgetTotal: row.budget_total, estimatedCompletionDate: row.est_completion_date, projectedIrr: row.projected_irr, budgetBreakdown: [{ label: "Construcción", amount: Math.round(row.budget_total * .55) }, { label: "Terreno", amount: Math.round(row.budget_total * .25) }, { label: "Costos indirectos", amount: Math.round(row.budget_total * .12) }, { label: "Reserva", amount: Math.round(row.budget_total * .08) }], milestones: [] };
       await db.insert(projects).values(values).onConflictDoUpdate({ target: projects.id, set: { ...values, updatedAt: new Date() } });
     }
     for (const row of stakeRows) {
@@ -539,8 +549,11 @@ export async function importWorkbookAction(
     revalidatePath("/admin/distributions");
     revalidatePath("/admin/documents");
     revalidatePath("/projects");
-    return { status: "success", message: `Imported ${investorRows.length} investors, ${projectRows.length} projects, ${stakeRows.length} positions, ${distributionRows.length} distributions, and ${documentRows.length} documents.` };
+    return { status: "success", message: `Se importaron ${investorRows.length} inversionistas, ${projectRows.length} proyectos, ${stakeRows.length} participaciones, ${distributionRows.length} distribuciones y ${documentRows.length} documentos.` };
   } catch (error) {
-    return { status: "error", message: error instanceof Error ? `Import stopped: ${error.message}` : "The workbook could not be imported." };
+    if (error instanceof z.ZodError) {
+      return { status: "error", message: "La importación se detuvo: revisa el formato y los campos obligatorios del archivo." };
+    }
+    return { status: "error", message: error instanceof Error ? `La importación se detuvo: ${error.message}` : "No se pudo importar el archivo." };
   }
 }

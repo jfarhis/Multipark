@@ -41,6 +41,7 @@ export class DatabaseDashboardRepository implements DashboardRepository {
         estimatedCompletionDate: row.estimatedCompletionDate,
         projectedIrr: row.projectedIrr,
         budgetBreakdown: row.budgetBreakdown,
+        milestones: row.milestones,
       })),
       stakes: stakeRows.map((row) => ({
         investorId: row.investorId,
@@ -74,7 +75,7 @@ export class DatabaseDashboardRepository implements DashboardRepository {
           id: `distribution-receipt-${row.id}`,
           projectId: row.projectId,
           investorId: row.investorId,
-          title: `Distribution receipt — ${row.date}`,
+          title: `Comprobante de distribución — ${row.date}`,
           fileUrl: `/api/receipts/${row.id}`,
           uploadedDate: row.date,
           type: "receipt" as const,

@@ -29,7 +29,7 @@ export const investors = pgTable("investors", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   phone: text("phone"),
-  bankDetails: text("bank_details").notNull().default("Not provided"),
+  bankDetails: text("bank_details").notNull().default("No proporcionado"),
   distributionNotices: boolean("distribution_notices").notNull().default(true),
   constructionUpdates: boolean("construction_updates").notNull().default(true),
   documentNotices: boolean("document_notices").notNull().default(true),
@@ -50,6 +50,10 @@ export const projects = pgTable("projects", {
   projectedIrr: doublePrecision("projected_irr").notNull().default(0),
   budgetBreakdown: jsonb("budget_breakdown")
     .$type<{ label: string; amount: number }[]>()
+    .notNull()
+    .default([]),
+  milestones: jsonb("milestones")
+    .$type<{ label: string; detail: string; complete: boolean }[]>()
     .notNull()
     .default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

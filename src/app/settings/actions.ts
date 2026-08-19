@@ -9,9 +9,9 @@ import { getSession } from "@/lib/auth";
 import type { FormState } from "@/lib/form-state";
 
 const settingsSchema = z.object({
-  name: z.string().trim().min(2),
-  phone: z.string().trim().max(40),
-  bankDetails: z.string().trim().min(2).max(120),
+  name: z.string().trim().min(2, "Escribe tu nombre completo."),
+  phone: z.string().trim().max(40, "El teléfono es demasiado largo."),
+  bankDetails: z.string().trim().min(2, "Escribe una referencia bancaria.").max(120, "La referencia bancaria es demasiado larga."),
 });
 
 export async function updateSettingsAction(
@@ -20,7 +20,7 @@ export async function updateSettingsAction(
 ): Promise<FormState> {
   const session = await getSession();
   if (session?.role !== "investor" || !session.investorId) {
-    return { status: "error", message: "Investor access is required to save these preferences." };
+    return { status: "error", message: "Se requiere acceso de inversionista para guardar estas preferencias." };
   }
   const parsed = settingsSchema.safeParse({
     name: formData.get("name"),
@@ -28,7 +28,7 @@ export async function updateSettingsAction(
     bankDetails: formData.get("bankDetails"),
   });
   if (!parsed.success) {
-    return { status: "error", message: parsed.error.issues[0]?.message ?? "Check your information." };
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa tu información." };
   }
   await getDb()
     .update(investors)
@@ -42,5 +42,5 @@ export async function updateSettingsAction(
     })
     .where(eq(investors.id, session.investorId));
   revalidatePath("/settings");
-  return { status: "success", message: "Your account preferences were saved." };
+  return { status: "success", message: "Tus preferencias fueron guardadas." };
 }

@@ -25,6 +25,7 @@ export interface Project {
   estimatedCompletionDate: string;
   projectedIrr: number;
   budgetBreakdown: { label: string; amount: number }[];
+  milestones: { label: string; detail: string; complete: boolean }[];
 }
 
 export interface InvestorProjectStake {

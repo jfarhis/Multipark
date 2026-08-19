@@ -8,7 +8,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <div>
           <div className="text-[14px] font-semibold tracking-[0.02em]">Gasfar Capital</div>
-          <div className="mt-0.5 text-[9px] font-medium uppercase tracking-[0.22em] text-[#77779b]">Private investments</div>
+          <div className="mt-0.5 text-[9px] font-medium uppercase tracking-[0.22em] text-[#77779b]">Inversiones privadas</div>
         </div>
       )}
     </div>
