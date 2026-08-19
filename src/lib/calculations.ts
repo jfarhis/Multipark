@@ -7,13 +7,15 @@ import type {
 
 export const money = new Intl.NumberFormat("es-MX", {
   style: "currency",
-  currency: "USD",
+  currency: "MXN",
+  currencyDisplay: "code",
   maximumFractionDigits: 0,
 });
 
 export const compactMoney = new Intl.NumberFormat("es-MX", {
   style: "currency",
-  currency: "USD",
+  currency: "MXN",
+  currencyDisplay: "code",
   notation: "compact",
   maximumFractionDigits: 1,
 });

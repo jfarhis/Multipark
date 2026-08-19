@@ -26,6 +26,7 @@ async function requireAdmin() {
 const investorSchema = z.object({
   name: z.string().trim().min(2, "Escribe el nombre completo del inversionista."),
   email: z.email("Escribe un correo electrónico válido.").transform((value) => value.toLowerCase()),
+  phone: z.string().trim().max(40, "El teléfono es demasiado largo.").optional(),
   bankDetails: z.string().trim().max(120).default("No proporcionado"),
 });
 
@@ -37,6 +38,7 @@ export async function inviteInvestorAction(
   const parsed = investorSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
+    phone: formData.get("phone") || undefined,
     bankDetails: formData.get("bankDetails") || "No proporcionado",
   });
   if (!parsed.success) {
@@ -123,18 +125,31 @@ export async function updateInvestorStakesAction(
 ): Promise<FormState> {
   await requireAdmin();
   const db = getDb();
-  const projectRows = await db.select({ id: projects.id, budgetTotal: projects.budgetTotal }).from(projects);
+  const [projectRows, existingStakes] = await Promise.all([
+    db.select({ id: projects.id, budgetTotal: projects.budgetTotal }).from(projects),
+    db.select().from(investorProjectStakes),
+  ]);
   const projectBudget = new Map(projectRows.map((project) => [project.id, project.budgetTotal]));
   const changes: { projectId: string; stakePct: number; capitalCommitted: number }[] = [];
   for (const [key, rawValue] of formData.entries()) {
-    if (!key.startsWith("stake:")) continue;
-    const projectId = key.slice(6);
-    const stakePct = Number(rawValue);
+    if (!key.startsWith("capital:")) continue;
+    const projectId = key.slice(8);
+    const capitalCommitted = Number(rawValue);
     const budgetTotal = projectBudget.get(projectId);
-    if (!Number.isFinite(stakePct) || stakePct < 0 || stakePct > 100 || budgetTotal === undefined) {
-      return { status: "error", message: "Cada porcentaje de participación debe estar entre 0 y 100." };
+    if (!Number.isFinite(capitalCommitted) || capitalCommitted < 0 || budgetTotal === undefined) {
+      return { status: "error", message: "Cada inversión debe ser un monto válido en pesos mexicanos." };
     }
-    changes.push({ projectId, stakePct, capitalCommitted: Math.round(budgetTotal * (stakePct / 100)) });
+    if (capitalCommitted > budgetTotal) {
+      return { status: "error", message: "La inversión de una persona no puede superar el presupuesto total del proyecto." };
+    }
+    const alreadyCommitted = existingStakes
+      .filter((stake) => stake.projectId === projectId && stake.investorId !== investorId)
+      .reduce((sum, stake) => sum + stake.capitalCommitted, 0);
+    if (alreadyCommitted + capitalCommitted > budgetTotal) {
+      return { status: "error", message: "La suma de las inversiones no puede superar el presupuesto total del proyecto." };
+    }
+    const stakePct = capitalCommitted === 0 ? 0 : (capitalCommitted / budgetTotal) * 100;
+    changes.push({ projectId, stakePct, capitalCommitted: Math.round(capitalCommitted) });
   }
   await Promise.all(changes.map((change) => change.stakePct === 0
     ? db.delete(investorProjectStakes).where(and(eq(investorProjectStakes.investorId, investorId), eq(investorProjectStakes.projectId, change.projectId)))
@@ -144,7 +159,7 @@ export async function updateInvestorStakesAction(
     })));
   revalidatePath(`/admin/investors/${investorId}`);
   revalidatePath("/admin");
-  return { status: "success", message: "Participaciones guardadas." };
+  return { status: "success", message: "Inversiones en MXN y participaciones guardadas." };
 }
 
 const documentSchema = z.object({
@@ -152,6 +167,7 @@ const documentSchema = z.object({
   projectId: z.string().min(1, "Selecciona un proyecto."),
   investorId: z.string().optional(),
   type: z.enum(["receipt", "report", "photo"]),
+  uploadedDate: z.string().min(10, "Selecciona la fecha del avance o documento."),
 });
 
 export async function uploadDocumentAction(
@@ -165,6 +181,7 @@ export async function uploadDocumentAction(
     projectId: formData.get("projectId"),
     investorId: formData.get("investorId") || undefined,
     type: formData.get("type"),
+    uploadedDate: formData.get("uploadedDate"),
   });
   if (!parsed.success || !(file instanceof File) || file.size === 0) {
     return { status: "error", message: "Selecciona un archivo y completa todos los campos." };
@@ -174,6 +191,9 @@ export async function uploadDocumentAction(
   }
   if (file.size > 10 * 1024 * 1024) {
     return { status: "error", message: "Los documentos deben pesar 10 MB o menos." };
+  }
+  if (parsed.data.type === "photo" && !file.type.startsWith("image/")) {
+    return { status: "error", message: "Para un avance fotográfico selecciona una imagen JPG, PNG o WebP." };
   }
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const pathname = `projects/${parsed.data.projectId}/${crypto.randomUUID()}-${safeName}`;
@@ -185,7 +205,7 @@ export async function uploadDocumentAction(
       investorId: parsed.data.investorId || null,
       title: parsed.data.title,
       pathname: blob.pathname,
-      uploadedDate: new Date().toISOString().slice(0, 10),
+      uploadedDate: parsed.data.uploadedDate,
       type: parsed.data.type,
     });
   } catch {
@@ -276,9 +296,7 @@ export async function deleteProjectAction(
   redirect("/projects");
 }
 
-const investorEditSchema = investorSchema.extend({
-  phone: z.string().trim().max(40, "El teléfono es demasiado largo.").optional(),
-});
+const investorEditSchema = investorSchema;
 
 export async function updateInvestorAction(
   investorId: string,
@@ -356,9 +374,9 @@ export async function createDistributionAction(
 ): Promise<FormState> {
   await requireAdmin();
   const parsed = distributionSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos de la distribución." };
+  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos del pago." };
   if (!(await validatePosition(parsed.data.projectId, parsed.data.investorId))) {
-    return { status: "error", message: "Asigna una participación al inversionista antes de registrar una distribución." };
+    return { status: "error", message: "Registra la inversión en MXN antes de agregar un pago." };
   }
   let receiptPathname: string | null = null;
   try {
@@ -366,14 +384,14 @@ export async function createDistributionAction(
     await getDb().insert(distributions).values({ id: `dist-${crypto.randomUUID()}`, ...parsed.data, receiptPathname });
   } catch (error) {
     if (receiptPathname) await del(receiptPathname).catch(() => undefined);
-    return { status: "error", message: error instanceof Error ? error.message : "No se pudo registrar la distribución." };
+    return { status: "error", message: error instanceof Error ? error.message : "No se pudo registrar el pago." };
   }
   revalidatePath("/admin/distributions");
   revalidatePath("/admin");
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${parsed.data.projectId}`);
-  return { status: "success", message: "Distribución registrada." };
+  return { status: "success", message: "Pago registrado en el panel del inversionista." };
 }
 
 export async function updateDistributionAction(
@@ -383,20 +401,20 @@ export async function updateDistributionAction(
 ): Promise<FormState> {
   await requireAdmin();
   const parsed = distributionSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos de la distribución." };
+  if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos del pago." };
   if (!(await validatePosition(parsed.data.projectId, parsed.data.investorId))) {
-    return { status: "error", message: "Asigna una participación al inversionista antes de mover la distribución." };
+    return { status: "error", message: "El inversionista debe tener una inversión registrada en el proyecto." };
   }
   const db = getDb();
   const [current] = await db.select().from(distributions).where(eq(distributions.id, distributionId)).limit(1);
-  if (!current) return { status: "error", message: "No se encontró la distribución." };
+  if (!current) return { status: "error", message: "No se encontró el pago." };
   let replacementPath: string | null = null;
   try {
     replacementPath = await uploadReceipt(formData.get("receipt"), parsed.data.projectId);
     await db.update(distributions).set({ ...parsed.data, receiptPathname: replacementPath ?? current.receiptPathname }).where(eq(distributions.id, distributionId));
   } catch (error) {
     if (replacementPath) await del(replacementPath).catch(() => undefined);
-    return { status: "error", message: error instanceof Error ? error.message : "No se pudo actualizar la distribución." };
+    return { status: "error", message: error instanceof Error ? error.message : "No se pudo actualizar el pago." };
   }
   if (replacementPath && current.receiptPathname) await del(current.receiptPathname).catch(() => undefined);
   revalidatePath("/admin/distributions");
@@ -405,7 +423,7 @@ export async function updateDistributionAction(
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${current.projectId}`);
   revalidatePath(`/projects/${parsed.data.projectId}`);
-  return { status: "success", message: "Distribución actualizada." };
+  return { status: "success", message: "Pago actualizado." };
 }
 
 export async function deleteDistributionAction(
@@ -417,7 +435,7 @@ export async function deleteDistributionAction(
   if (formData.get("confirmation") !== "ELIMINAR") return { status: "error", message: "Escribe ELIMINAR para confirmar." };
   const db = getDb();
   const [current] = await db.select().from(distributions).where(eq(distributions.id, distributionId)).limit(1);
-  if (!current) return { status: "error", message: "No se encontró la distribución." };
+  if (!current) return { status: "error", message: "No se encontró el pago." };
   try {
     if (current.receiptPathname) await del(current.receiptPathname);
   } catch {
@@ -429,7 +447,7 @@ export async function deleteDistributionAction(
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/documents");
   revalidatePath(`/projects/${current.projectId}`);
-  return { status: "success", message: "Distribución eliminada." };
+  return { status: "success", message: "Pago eliminado." };
 }
 
 export async function updateDocumentAction(
@@ -443,6 +461,7 @@ export async function updateDocumentAction(
     projectId: formData.get("projectId"),
     investorId: formData.get("investorId") || undefined,
     type: formData.get("type"),
+    uploadedDate: formData.get("uploadedDate"),
   });
   if (!parsed.success) return { status: "error", message: parsed.error.issues[0]?.message ?? "Revisa los datos del documento." };
   if (parsed.data.investorId && !(await validatePosition(parsed.data.projectId, parsed.data.investorId))) {
@@ -456,6 +475,9 @@ export async function updateDocumentAction(
   try {
     if (file instanceof File && file.size > 0) {
       if (file.size > 10 * 1024 * 1024) return { status: "error", message: "Los documentos deben pesar 10 MB o menos." };
+      if (parsed.data.type === "photo" && !file.type.startsWith("image/")) {
+        return { status: "error", message: "Para un avance fotográfico selecciona una imagen JPG, PNG o WebP." };
+      }
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
       replacementPath = (await put(`projects/${parsed.data.projectId}/${crypto.randomUUID()}-${safeName}`, file, { access: "private", addRandomSuffix: false })).pathname;
     }

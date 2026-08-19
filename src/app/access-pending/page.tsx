@@ -10,7 +10,7 @@ export default function AccessPendingPage() {
         </span>
         <p className="eyebrow mt-5">Revisión de cuenta</p>
         <h1 className="mt-3 text-[20px] font-semibold">Tu cuenta necesita acceso</h1>
-        <p className="mt-3 text-[12px] leading-6 text-[#8a93b2]">
+        <p className="mt-3 text-[15px] leading-6 text-[#8a93b2]">
           Este correo está autenticado, pero todavía no está conectado a un inversionista.
           Pide al administrador de Gasfar que agregue o invite este correo.
         </p>

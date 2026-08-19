@@ -111,12 +111,12 @@ export function PortfolioActivityDonut({ items }: { items: { label: string; amou
       <div className="relative mx-auto h-[176px] w-[176px]">
         <Doughnut data={{ labels: items.map((item) => item.label), datasets: [{ data: items.map((item) => item.amount), backgroundColor: palette, borderColor: "#10162a", borderWidth: 5, borderRadius: 7, hoverOffset: 2 }] }} options={{ cutout: "72%", maintainAspectRatio: false, rotation: -100, circumference: 350, plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: (context) => compactMoney.format(context.parsed) } } } }} />
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
-          <div><p className="tabular text-[18px] font-semibold">{compactMoney.format(total)}</p><p className="mt-1 text-[8px] uppercase tracking-[.12em] text-[#6b7594]">Presupuesto total</p></div>
+          <div><p className="tabular text-[18px] font-semibold">{compactMoney.format(total)}</p><p className="mt-1 text-[11px] uppercase tracking-[.12em] text-[#6b7594]">Presupuesto total</p></div>
         </div>
       </div>
       <div className="space-y-1">
         {items.map((item, index) => (
-          <div key={item.label} className="flex items-center justify-between gap-3 border-b border-[#232b45] py-2.5 text-[9px] last:border-0">
+          <div key={item.label} className="flex items-center justify-between gap-3 border-b border-[#232b45] py-2.5 text-[12px] last:border-0">
             <span className="flex min-w-0 items-center gap-2 text-[#8a93b2]"><span className="size-2 shrink-0 rounded-sm" style={{ background: palette[index % palette.length] }} /><span className="truncate">{item.label}</span></span>
             <span className="tabular shrink-0 text-[#d5dcee]">{compactMoney.format(item.amount)}</span>
           </div>
@@ -129,8 +129,8 @@ export function PortfolioActivityDonut({ items }: { items: { label: string; amou
 export function BudgetDonutChart({ items }: { items: { label: string; amount: number }[] }) {
   return (
     <div className="grid items-center gap-5 sm:grid-cols-[160px_1fr]">
-      <div className="relative h-[160px]"><Doughnut data={{ labels: items.map((item) => item.label), datasets: [{ data: items.map((item) => item.amount), backgroundColor: palette, borderColor: "#10162a", borderWidth: 4, hoverOffset: 4 }] }} options={{ cutout: "72%", maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip } }} /><div className="pointer-events-none absolute inset-0 grid place-items-center text-center"><div><p className="text-[18px] font-semibold">100%</p><p className="text-[8px] text-[#6b7594]">Asignado</p></div></div></div>
-      <div className="space-y-3">{items.map((item, index) => <div key={item.label} className="flex items-center justify-between gap-3 text-[9px]"><span className="flex items-center gap-2 text-[#8a93b2]"><span className="size-2 rounded-full" style={{ background: palette[index % palette.length] }} />{item.label}</span><span className="tabular font-medium">{compactMoney.format(item.amount)}</span></div>)}</div>
+      <div className="relative h-[160px]"><Doughnut data={{ labels: items.map((item) => item.label), datasets: [{ data: items.map((item) => item.amount), backgroundColor: palette, borderColor: "#10162a", borderWidth: 4, hoverOffset: 4 }] }} options={{ cutout: "72%", maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip } }} /><div className="pointer-events-none absolute inset-0 grid place-items-center text-center"><div><p className="text-[18px] font-semibold">100%</p><p className="text-[11px] text-[#6b7594]">Asignado</p></div></div></div>
+      <div className="space-y-3">{items.map((item, index) => <div key={item.label} className="flex items-center justify-between gap-3 text-[12px]"><span className="flex items-center gap-2 text-[#8a93b2]"><span className="size-2 rounded-full" style={{ background: palette[index % palette.length] }} />{item.label}</span><span className="tabular font-medium">{compactMoney.format(item.amount)}</span></div>)}</div>
     </div>
   );
 }

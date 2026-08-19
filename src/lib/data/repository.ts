@@ -79,7 +79,7 @@ function toDashboardData(
           id: `distribution-receipt-${row.id}`,
           projectId: row.projectId,
           investorId: row.investorId,
-          title: `Comprobante de distribución — ${row.date}`,
+          title: `Comprobante de pago — ${row.date}`,
           fileUrl: `/api/receipts/${row.id}`,
           uploadedDate: row.date,
           type: "receipt" as const,

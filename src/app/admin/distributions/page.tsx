@@ -5,5 +5,5 @@ import { getDashboardData } from "@/lib/data/repository";
 
 export default async function AdminDistributionsPage() {
   const data = await getDashboardData(await requireAdminSession());
-  return <><PageHeading eyebrow="Pagos" title="Administración de distribuciones" description="Registra pagos, corrige datos, adjunta comprobantes y controla el historial visible para inversionistas." /><DistributionManager data={data} /></>;
+  return <><PageHeading eyebrow="Pagos en pesos mexicanos" title="Pagos a inversionistas" description="Registra cada distribución en MXN, adjunta su comprobante y publica el movimiento en el panel privado del inversionista." /><DistributionManager data={data} /></>;
 }

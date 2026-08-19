@@ -17,7 +17,7 @@ export default async function LoginPage() {
       <section className="relative hidden min-h-screen flex-col justify-between border-r border-white/6 bg-[radial-gradient(circle_at_10%_115%,rgba(77,124,254,.3),transparent_46%),radial-gradient(circle_at_90%_-10%,rgba(56,189,248,.14),transparent_40%),#0a0e1a] p-10 lg:flex">
         <Logo />
         <div className="max-w-[600px]">
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#2dd4a7]/15 bg-[#2dd4a7]/6 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[.18em] text-[#43e0b3]">
+          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#2dd4a7]/15 bg-[#2dd4a7]/6 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[.18em] text-[#43e0b3]">
             <Activity size={12} /> Información del portafolio en vivo
           </div>
           <h1 className="max-w-[560px] text-[52px] font-medium leading-[1.02] tracking-[-.055em] text-[#f4f6fc]">
@@ -37,14 +37,14 @@ export default async function LoginPage() {
               return (
                 <div key={String(title)} className="login-feature-card rounded-xl p-4">
                   <TileIcon size={16} />
-                  <p className="mt-6 text-[12px] font-semibold text-[#e6eaf6]">{String(title)}</p>
-                  <p className="mt-1 text-[10px] text-[#6b7594]">{String(detail)}</p>
+                  <p className="mt-6 text-[15px] font-semibold text-[#e6eaf6]">{String(title)}</p>
+                  <p className="mt-1 text-[13px] text-[#6b7594]">{String(detail)}</p>
                 </div>
               );
             })}
           </div>
         </div>
-        <p className="text-[9px] uppercase tracking-[.16em] text-[#3e4762]">
+        <p className="text-[12px] uppercase tracking-[.16em] text-[#3e4762]">
           © 2026 Gasfar Capital · Privado y confidencial
         </p>
       </section>
@@ -54,7 +54,7 @@ export default async function LoginPage() {
           <div className="mb-8 lg:hidden"><Logo /></div>
           <p className="eyebrow mb-3 text-[#43e0b3]">Portal seguro para inversionistas</p>
           <h2 className="text-[28px] font-medium tracking-[-.04em]">Bienvenido de nuevo</h2>
-          <p className="mb-7 mt-2 text-[12px] leading-5 text-[#7c86a6]">
+          <p className="mb-7 mt-2 text-[15px] leading-5 text-[#7c86a6]">
             Ingresa con el correo conectado a tu cuenta de Gasfar.
           </p>
           <SignIn
