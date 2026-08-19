@@ -2,7 +2,8 @@
 
 import { Download, HandCoins, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useActionState } from "react";
-import { createDistributionAction, deleteDistributionAction, initialFormState, updateDistributionAction } from "@/app/admin/actions";
+import { createDistributionAction, deleteDistributionAction, updateDistributionAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import { money } from "@/lib/calculations";
 import type { DashboardData, Distribution } from "@/lib/types";
 import { FormMessage } from "./form-message";

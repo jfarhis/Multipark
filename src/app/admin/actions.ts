@@ -15,9 +15,7 @@ import {
   projects,
 } from "@/db/schema";
 import { getSession } from "@/lib/auth";
-
-export type FormState = { status: "idle" | "success" | "error"; message: string };
-export const initialFormState: FormState = { status: "idle", message: "" };
+import type { FormState } from "@/lib/form-state";
 
 async function requireAdmin() {
   const session = await getSession();
@@ -220,16 +218,21 @@ export async function updateProjectAction(
   if (Math.abs(breakdownTotal - project.budgetTotal) > 1) {
     return { status: "error", message: "The four budget categories must add up to the total budget." };
   }
-  await getDb().update(projects).set({
-    ...project,
-    budgetBreakdown: [
-      { label: "Construction", amount: constructionAmount },
-      { label: "Land", amount: landAmount },
-      { label: "Soft costs", amount: softCostsAmount },
-      { label: "Reserve", amount: reserveAmount },
-    ],
-    updatedAt: new Date(),
-  }).where(eq(projects.id, projectId));
+  try {
+    await getDb().update(projects).set({
+      ...project,
+      budgetBreakdown: [
+        { label: "Construction", amount: constructionAmount },
+        { label: "Land", amount: landAmount },
+        { label: "Soft costs", amount: softCostsAmount },
+        { label: "Reserve", amount: reserveAmount },
+      ],
+      updatedAt: new Date(),
+    }).where(eq(projects.id, projectId));
+  } catch (error) {
+    console.error("[admin:updateProject] Save failed", { projectId, error });
+    return { status: "error", message: "The project could not be saved. Please try again." };
+  }
   revalidatePath("/admin");
   revalidatePath("/projects");
   revalidatePath(`/projects/${projectId}`);

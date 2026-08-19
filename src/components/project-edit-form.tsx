@@ -2,7 +2,8 @@
 
 import { PencilLine, Save, Trash2 } from "lucide-react";
 import { useActionState } from "react";
-import { deleteProjectAction, initialFormState, updateProjectAction } from "@/app/admin/actions";
+import { deleteProjectAction, updateProjectAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import type { Project } from "@/lib/types";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";

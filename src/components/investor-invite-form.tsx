@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import { MailPlus } from "lucide-react";
-import { initialFormState, inviteInvestorAction } from "@/app/admin/actions";
+import { inviteInvestorAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";
 

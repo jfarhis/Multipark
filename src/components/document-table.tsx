@@ -2,7 +2,8 @@
 
 import { ChevronLeft, ChevronRight, Download, FileImage, FileText, PencilLine, ReceiptText, Search, Trash2 } from "lucide-react";
 import { useActionState, useMemo, useState } from "react";
-import { deleteDocumentAction, initialFormState, updateDocumentAction } from "@/app/admin/actions";
+import { deleteDocumentAction, updateDocumentAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import type { DashboardData, DocumentType } from "@/lib/types";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";

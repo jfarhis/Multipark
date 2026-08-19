@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import { FileUp } from "lucide-react";
-import { initialFormState, uploadDocumentAction } from "@/app/admin/actions";
+import { uploadDocumentAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import type { DashboardData } from "@/lib/types";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";

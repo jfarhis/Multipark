@@ -2,7 +2,8 @@
 
 import { FileSpreadsheet } from "lucide-react";
 import { useActionState } from "react";
-import { importWorkbookAction, initialFormState } from "@/app/admin/actions";
+import { importWorkbookAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";
 

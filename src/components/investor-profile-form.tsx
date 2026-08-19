@@ -2,7 +2,8 @@
 
 import { Save, Trash2, UserRoundPen } from "lucide-react";
 import { useActionState } from "react";
-import { deleteInvestorAction, initialFormState, updateInvestorAction } from "@/app/admin/actions";
+import { deleteInvestorAction, updateInvestorAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import type { Investor } from "@/lib/types";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";

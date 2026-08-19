@@ -6,7 +6,7 @@ import { z } from "zod";
 import { getDb } from "@/db";
 import { investors } from "@/db/schema";
 import { getSession } from "@/lib/auth";
-import type { FormState } from "@/app/admin/actions";
+import type { FormState } from "@/lib/form-state";
 
 const settingsSchema = z.object({
   name: z.string().trim().min(2),

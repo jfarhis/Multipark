@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import { Building2 } from "lucide-react";
-import { createProjectAction, initialFormState } from "@/app/admin/actions";
+import { createProjectAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";
 

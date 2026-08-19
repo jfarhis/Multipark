@@ -4,7 +4,8 @@ import { Save } from "lucide-react";
 import { useActionState } from "react";
 import type { DashboardData, Investor } from "@/lib/types";
 import { money } from "@/lib/calculations";
-import { initialFormState, updateInvestorStakesAction } from "@/app/admin/actions";
+import { updateInvestorStakesAction } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";
 

@@ -3,7 +3,7 @@
 import { Save, ShieldCheck } from "lucide-react";
 import { useActionState } from "react";
 import type { Session } from "@/lib/types";
-import { initialFormState } from "@/app/admin/actions";
+import { initialFormState } from "@/lib/form-state";
 import { updateSettingsAction } from "@/app/settings/actions";
 import { FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";
